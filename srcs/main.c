@@ -6,11 +6,12 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/19 20:48:47 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/19 22:12:53 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include "../libft/libft.h"
 
 typedef struct s_node
 {
@@ -81,7 +82,7 @@ t_list	*list_init(int nums_len, char **nums)
 	i = 0;
 	while (i < nums_len)
 	{
-		if (!list_append(atoi(nums[i]), lst))
+		if (!list_append(ft_atoi(nums[i]), lst))
 		{
 			list_free(lst);
 			return (NULL);
