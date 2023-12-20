@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/20 12:02:56 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/20 12:13:07 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,24 @@ void	pb(t_list *stack_a, t_list *stack_b)
 	ft_putstr_fd("pb\n", STDOUT_FILENO);
 }
 
+void	_r(t_list *stack)
+{
+	stack->tail = stack->head;
+	stack->head = stack->head->next;
+}
+
+void	ra(t_list *stack_a)
+{
+	_r(stack_a);
+	ft_putstr_fd("ra\n", STDOUT_FILENO);
+}
+
+void	rb(t_list *stack_b)
+{
+	_r(stack_b);
+	ft_putstr_fd("rb\n", STDOUT_FILENO);
+}
+
 // TODO: implement swapping functions
 #include <stdio.h>
 int	main(int argc, char **argv)
@@ -165,9 +183,8 @@ int	main(int argc, char **argv)
 	if (argc < 2)
 		return (0);
 	t_list *stack_a = list_init(argc - 1, &argv[1]);
-	t_list *stack_b = list_init(0, NULL);
-	_s(stack_a);
-	_p(stack_a, stack_b);
+	// t_list *stack_b = list_init(0, NULL);
+	_r(stack_a);
 	t_node *curr_a = stack_a->head;
 	while (curr_a) {
 		printf("%d\n", curr_a->value);
@@ -175,11 +192,11 @@ int	main(int argc, char **argv)
 		if (curr_a == stack_a->head)
 			break;
 	}
-	t_node *curr_b = stack_b->head;
-	while (curr_b) {
-		printf("%d\n", curr_b->value);
-		curr_b = curr_b->next;
-		if (curr_b == stack_b->head)
-			break;
-	}
+// 	t_node *curr_b = stack_b->head;
+// 	while (curr_b) {
+// 		printf("%d\n", curr_b->value);
+// 		curr_b = curr_b->next;
+// 		if (curr_b == stack_b->head)
+// 			break;
+// 	}
 }
