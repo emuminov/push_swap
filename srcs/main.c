@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/20 12:13:07 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/20 12:14:32 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,6 +174,13 @@ void	rb(t_list *stack_b)
 {
 	_r(stack_b);
 	ft_putstr_fd("rb\n", STDOUT_FILENO);
+}
+
+void	rr(t_list *stack_a, t_list *stack_b)
+{
+	_r(stack_a);
+	_r(stack_b);
+	ft_putstr_fd("rr\n", STDOUT_FILENO);
 }
 
 // TODO: implement swapping functions
