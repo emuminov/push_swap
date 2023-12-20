@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/19 23:54:10 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/20 12:02:56 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,11 +129,9 @@ void	_p(t_list *src_stack, t_list *dest_stack)
 
 	src_head = src_stack->head;
 	dest_head = dest_stack->head;
-	{
-		src_stack->head = src_head->next;
-		src_stack->head->prev = src_head->prev;
-		src_stack->tail->next = src_stack->head;
-	}
+	src_stack->head = src_head->next;
+	src_stack->head->prev = src_head->prev;
+	src_stack->tail->next = src_stack->head;
 	if (!dest_stack->tail)
 	{
 		dest_stack->tail = src_head;
