@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/20 12:14:32 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/21 14:45:51 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,8 @@ void	_p(t_list *src_stack, t_list *dest_stack)
 	{
 		dest_head->prev = src_head;
 		src_head->next = dest_head;
+		dest_stack->head->prev = src_head;
+		dest_stack->tail->next = src_head;
 	}
 	src_head->prev = dest_stack->tail;
 	dest_stack->head = src_head;
@@ -190,8 +192,10 @@ int	main(int argc, char **argv)
 	if (argc < 2)
 		return (0);
 	t_list *stack_a = list_init(argc - 1, &argv[1]);
-	// t_list *stack_b = list_init(0, NULL);
-	_r(stack_a);
+	t_list *stack_b = list_init(0, NULL);
+	pb(stack_a, stack_b);
+	pb(stack_a, stack_b);
+	rr(stack_a, stack_b);
 	t_node *curr_a = stack_a->head;
 	while (curr_a) {
 		printf("%d\n", curr_a->value);
@@ -199,11 +203,12 @@ int	main(int argc, char **argv)
 		if (curr_a == stack_a->head)
 			break;
 	}
-// 	t_node *curr_b = stack_b->head;
-// 	while (curr_b) {
-// 		printf("%d\n", curr_b->value);
-// 		curr_b = curr_b->next;
-// 		if (curr_b == stack_b->head)
-// 			break;
-// 	}
+	ft_putstr_fd("---\n", 1);
+	t_node *curr_b = stack_b->head;
+	while (curr_b) {
+		printf("%d\n", curr_b->value);
+		curr_b = curr_b->next;
+		if (curr_b == stack_b->head)
+			break;
+	}
 }
