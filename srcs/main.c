@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/21 18:35:02 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/21 19:26:28 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@ typedef struct s_list
 	t_node	*head;
 	t_node	*tail;
 }	t_list;
+
+typedef struct s_stacks
+{
+	t_list	*stack_a;
+	t_list	*stack_b;
+}	t_stacks;
 
 void	list_free(t_list *lst)
 {
@@ -105,22 +111,22 @@ void	_s(t_list *stack)
 	stack->head->next->value = tmp;
 }
 
-void	sa(t_list *stack_a)
+void	sa(t_stacks *stacks)
 {
-	_s(stack_a);
+	_s(stacks->stack_a);
 	ft_putstr_fd("sa\n", STDOUT_FILENO);
 }
 
-void	sb(t_list *stack_b)
+void	sb(t_stacks *stacks)
 {
-	_s(stack_b);
+	_s(stacks->stack_b);
 	ft_putstr_fd("sb\n", STDOUT_FILENO);
 }
 
-void	ss(t_list *stack_a, t_list *stack_b)
+void	ss(t_stacks *stacks)
 {
-	_s(stack_a);
-	_s(stack_b);
+	_s(stacks->stack_a);
+	_s(stacks->stack_b);
 	ft_putstr_fd("ss\n", STDOUT_FILENO);
 }
 
@@ -152,15 +158,15 @@ void	_p(t_list *src_stack, t_list *dest_stack)
 	dest_stack->head = src_head;
 }
 
-void	pa(t_list *stack_a, t_list *stack_b)
+void	pa(t_stacks *stacks)
 {
-	_p(stack_b, stack_a);
+	_p(stacks->stack_b, stacks->stack_a);
 	ft_putstr_fd("pa\n", STDOUT_FILENO);
 }
 
-void	pb(t_list *stack_a, t_list *stack_b)
+void	pb(t_stacks *stacks)
 {
-	_p(stack_a, stack_b);
+	_p(stacks->stack_a, stacks->stack_b);
 	ft_putstr_fd("pb\n", STDOUT_FILENO);
 }
 
@@ -172,22 +178,22 @@ void	_r(t_list *stack)
 	stack->head = stack->head->next;
 }
 
-void	ra(t_list *stack_a)
+void	ra(t_stacks *stacks)
 {
-	_r(stack_a);
+	_r(stacks->stack_a);
 	ft_putstr_fd("ra\n", STDOUT_FILENO);
 }
 
-void	rb(t_list *stack_b)
+void	rb(t_stacks *stacks)
 {
-	_r(stack_b);
+	_r(stacks->stack_b);
 	ft_putstr_fd("rb\n", STDOUT_FILENO);
 }
 
-void	rr(t_list *stack_a, t_list *stack_b)
+void	rr(t_stacks *stacks)
 {
-	_r(stack_a);
-	_r(stack_b);
+	_r(stacks->stack_a);
+	_r(stacks->stack_b);
 	ft_putstr_fd("rr\n", STDOUT_FILENO);
 }
 
@@ -199,51 +205,54 @@ void	_rr(t_list *stack)
 	stack->tail = stack->tail->prev;
 }
 
-void	rra(t_list *stack_a)
+void	rra(t_stacks *stacks)
 {
-	_rr(stack_a);
+	_rr(stacks->stack_a);
 	ft_putstr_fd("rra\n", STDOUT_FILENO);
 }
 
-void	rrb(t_list *stack_b)
+void	rrb(t_stacks *stacks)
 {
-	_rr(stack_b);
+	_rr(stacks->stack_b);
 	ft_putstr_fd("rrb\n", STDOUT_FILENO);
 }
 
-void	rrr(t_list *stack_a, t_list *stack_b)
+void	rrr(t_stacks *stacks)
 {
-	_rr(stack_a);
-	_rr(stack_b);
+	_rr(stacks->stack_a);
+	_rr(stacks->stack_b);
 	ft_putstr_fd("rrr\n", STDOUT_FILENO);
 }
 
-void	_solve_3(t_list *stack_a)
+void	_sort_3(t_stacks *stacks)
 {
+	t_list	*stack_a;
+
+	stack_a = stacks->stack_a;
 	if (stack_a->head->value == 1 && stack_a->tail->value == 3)
 		return ;
 	if (stack_a->head->value == 1 && stack_a->tail->value == 2)
 	{
-		rra(stack_a);
-		return sa(stack_a);
+		rra(stacks);
+		return sa(stacks);
 	}
 	if (stack_a->head->value == 2 && stack_a->tail->value == 3)
-		return sa(stack_a);
+		return sa(stacks);
 	if (stack_a->head->value == 2 && stack_a->tail->value == 1)
-		return rra(stack_a);
+		return rra(stacks);
 	if (stack_a->head->value == 3 && stack_a->tail->value == 2)
-		return ra(stack_a);
+		return ra(stacks);
 	if (stack_a->head->value == 3 && stack_a->tail->value == 1)
 	{
-		sa(stack_a);
-		return rra(stack_a);
+		sa(stacks);
+		return rra(stacks);
 	}
 }
 
-void	push_swap(int nums_len, t_list *stack_a)
+void	push_swap(int nums_len, t_stacks *stacks)
 {
 	if (nums_len == 3)
-		return _solve_3(stack_a);
+		return _sort_3(stacks);
 }
 
 //TODO: refactor stack a and stack b into struct
@@ -254,23 +263,29 @@ int	main(int argc, char **argv)
 {
 	if (argc < 2)
 		return (0);
-	t_list *stack_a = list_init(argc - 1, &argv[1]);
-	t_list *stack_b = list_init(0, NULL);
-	push_swap(argc - 1, stack_a);
+	t_stacks	stacks;
+
+	stacks.stack_a = list_init(argc - 1, &argv[1]);
+	if (!stacks.stack_a)
+		return (1);
+	stacks.stack_b = list_init(0, NULL);
+	if (!stacks.stack_b)
+		return (1);
+	push_swap(argc - 1, &stacks);
 	ft_putstr_fd("---\n", 1);
-	t_node *curr_a = stack_a->head;
+	t_node *curr_a = stacks.stack_a->head;
 	while (curr_a) {
 		printf("%d\n", curr_a->value);
 		curr_a = curr_a->next;
-		if (curr_a == stack_a->head)
+		if (curr_a == stacks.stack_a->head)
 			break;
 	}
 	ft_putstr_fd("---\n", 1);
-	t_node *curr_b = stack_b->head;
+	t_node *curr_b = stacks.stack_b->head;
 	while (curr_b) {
 		printf("%d\n", curr_b->value);
 		curr_b = curr_b->next;
-		if (curr_b == stack_b->head)
+		if (curr_b == stacks.stack_b->head)
 			break;
 	}
 }
