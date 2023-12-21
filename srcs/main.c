@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/21 14:45:51 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/21 15:03:20 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,32 @@ void	rr(t_list *stack_a, t_list *stack_b)
 	ft_putstr_fd("rr\n", STDOUT_FILENO);
 }
 
+void	_rr(t_list *stack)
+{
+	stack->head = stack->tail;
+	stack->tail = stack->tail->prev;
+}
+
+void	rra(t_list *stack_a)
+{
+	_rr(stack_a);
+	ft_putstr_fd("rra\n", STDOUT_FILENO);
+}
+
+void	rrb(t_list *stack_b)
+{
+	_rr(stack_b);
+	ft_putstr_fd("rrb\n", STDOUT_FILENO);
+}
+
+void	rrr(t_list *stack_a, t_list *stack_b)
+{
+	_rr(stack_a);
+	_rr(stack_b);
+	ft_putstr_fd("rrr\n", STDOUT_FILENO);
+}
 // TODO: implement swapping functions
+// TODO: check for null in swapping functions
 #include <stdio.h>
 int	main(int argc, char **argv)
 {
@@ -193,9 +218,10 @@ int	main(int argc, char **argv)
 		return (0);
 	t_list *stack_a = list_init(argc - 1, &argv[1]);
 	t_list *stack_b = list_init(0, NULL);
-	pb(stack_a, stack_b);
-	pb(stack_a, stack_b);
-	rr(stack_a, stack_b);
+	// pb(stack_a, stack_b);
+	// pb(stack_a, stack_b);
+	// pb(stack_a, stack_b);
+	rra(stack_a);
 	t_node *curr_a = stack_a->head;
 	while (curr_a) {
 		printf("%d\n", curr_a->value);
