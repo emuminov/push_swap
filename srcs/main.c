@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/21 15:12:14 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/21 18:35:02 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,16 +218,46 @@ void	rrr(t_list *stack_a, t_list *stack_b)
 	ft_putstr_fd("rrr\n", STDOUT_FILENO);
 }
 
-// TODO: check for null in swapping functions
+void	_solve_3(t_list *stack_a)
+{
+	if (stack_a->head->value == 1 && stack_a->tail->value == 3)
+		return ;
+	if (stack_a->head->value == 1 && stack_a->tail->value == 2)
+	{
+		rra(stack_a);
+		return sa(stack_a);
+	}
+	if (stack_a->head->value == 2 && stack_a->tail->value == 3)
+		return sa(stack_a);
+	if (stack_a->head->value == 2 && stack_a->tail->value == 1)
+		return rra(stack_a);
+	if (stack_a->head->value == 3 && stack_a->tail->value == 2)
+		return ra(stack_a);
+	if (stack_a->head->value == 3 && stack_a->tail->value == 1)
+	{
+		sa(stack_a);
+		return rra(stack_a);
+	}
+}
+
+void	push_swap(int nums_len, t_list *stack_a)
+{
+	if (nums_len == 3)
+		return _solve_3(stack_a);
+}
+
+//TODO: refactor stack a and stack b into struct
+//TODO: refactor swapping functions into their own files
+//TODO: add error checking
 #include <stdio.h>
 int	main(int argc, char **argv)
 {
 	if (argc < 2)
 		return (0);
-	ft_putstr_fd(argv[1], 1);
-	t_list *stack_a = list_init(0, NULL);
+	t_list *stack_a = list_init(argc - 1, &argv[1]);
 	t_list *stack_b = list_init(0, NULL);
-	sa(stack_a);
+	push_swap(argc - 1, stack_a);
+	ft_putstr_fd("---\n", 1);
 	t_node *curr_a = stack_a->head;
 	while (curr_a) {
 		printf("%d\n", curr_a->value);
