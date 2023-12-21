@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/21 15:03:20 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/21 15:12:14 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,8 @@ void	_s(t_list *stack)
 {
 	int	tmp;
 
+	if (!stack->head)
+		return ;
 	tmp = stack->head->value;
 	stack->head->value = stack->head->next->value;
 	stack->head->next->value = tmp;
@@ -127,6 +129,8 @@ void	_p(t_list *src_stack, t_list *dest_stack)
 	t_node	*src_head;
 	t_node	*dest_head;
 
+	if (!src_stack->head || !src_stack->tail)
+		return ;
 	src_head = src_stack->head;
 	dest_head = dest_stack->head;
 	src_stack->head = src_head->next;
@@ -162,6 +166,8 @@ void	pb(t_list *stack_a, t_list *stack_b)
 
 void	_r(t_list *stack)
 {
+	if (!stack->head || !stack->tail)
+		return ;
 	stack->tail = stack->head;
 	stack->head = stack->head->next;
 }
@@ -187,6 +193,8 @@ void	rr(t_list *stack_a, t_list *stack_b)
 
 void	_rr(t_list *stack)
 {
+	if (!stack->head || !stack->tail)
+		return ;
 	stack->head = stack->tail;
 	stack->tail = stack->tail->prev;
 }
@@ -209,19 +217,17 @@ void	rrr(t_list *stack_a, t_list *stack_b)
 	_rr(stack_b);
 	ft_putstr_fd("rrr\n", STDOUT_FILENO);
 }
-// TODO: implement swapping functions
+
 // TODO: check for null in swapping functions
 #include <stdio.h>
 int	main(int argc, char **argv)
 {
 	if (argc < 2)
 		return (0);
-	t_list *stack_a = list_init(argc - 1, &argv[1]);
+	ft_putstr_fd(argv[1], 1);
+	t_list *stack_a = list_init(0, NULL);
 	t_list *stack_b = list_init(0, NULL);
-	// pb(stack_a, stack_b);
-	// pb(stack_a, stack_b);
-	// pb(stack_a, stack_b);
-	rra(stack_a);
+	sa(stack_a);
 	t_node *curr_a = stack_a->head;
 	while (curr_a) {
 		printf("%d\n", curr_a->value);
