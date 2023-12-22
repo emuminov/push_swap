@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/21 19:26:28 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/22 11:46:34 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ t_list	*list_append(int num, t_list *lst)
 	node->prev = lst->tail;
 	lst->tail->next = node;
 	lst->tail = node;
+	lst->head->prev = node;
 	return (lst);
 }
 
@@ -90,12 +91,11 @@ t_list	*list_init(int nums_len, char **nums)
 	i = 0;
 	while (i < nums_len)
 	{
-		if (!list_append(ft_atoi(nums[i]), lst))
+		if (!list_append(ft_atoi(nums[i++]), lst))
 		{
 			list_free(lst);
 			return (NULL);
 		}
-		i++;
 	}
 	return (lst);
 }
@@ -249,14 +249,21 @@ void	_sort_3(t_stacks *stacks)
 	}
 }
 
+// void	_sort(t_stacks *stacks)
+// {
+// 	
+// }
+// 3 1 2 5 4
+// ra pb pb sa pb pa pa pa pa
+
 void	push_swap(int nums_len, t_stacks *stacks)
 {
 	if (nums_len == 3)
 		return _sort_3(stacks);
 }
 
-//TODO: refactor stack a and stack b into struct
 //TODO: refactor swapping functions into their own files
+//TODO: store more information on structs (len, smallest, biggest etc)
 //TODO: add error checking
 #include <stdio.h>
 int	main(int argc, char **argv)
@@ -271,7 +278,16 @@ int	main(int argc, char **argv)
 	stacks.stack_b = list_init(0, NULL);
 	if (!stacks.stack_b)
 		return (1);
-	push_swap(argc - 1, &stacks);
+	// push_swap(argc - 1, &stacks);
+	ra(&stacks);
+	pb(&stacks);
+	pb(&stacks);
+	sa(&stacks);
+	pb(&stacks);
+	pa(&stacks);
+	pa(&stacks);
+	pa(&stacks);
+	pa(&stacks);
 	ft_putstr_fd("---\n", 1);
 	t_node *curr_a = stacks.stack_a->head;
 	while (curr_a) {
@@ -281,11 +297,11 @@ int	main(int argc, char **argv)
 			break;
 	}
 	ft_putstr_fd("---\n", 1);
-	t_node *curr_b = stacks.stack_b->head;
-	while (curr_b) {
-		printf("%d\n", curr_b->value);
-		curr_b = curr_b->next;
-		if (curr_b == stacks.stack_b->head)
-			break;
-	}
+	// t_node *curr_b = stacks.stack_b->head;
+	// while (curr_b) {
+	// 	printf("%d\n", curr_b->value);
+	// 	curr_b = curr_b->next;
+	// 	if (curr_b == stacks.stack_b->head)
+	// 		break;
+	// }
 }
