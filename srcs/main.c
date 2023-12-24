@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/24 02:40:48 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/24 03:11:47 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,7 @@ void	list_prepend_node(t_node *node, t_list *lst)
 	}
 	node->next = lst->head;
 	node->prev = lst->tail;
+	lst->head->prev = node;
 	lst->head = node;
 	lst->tail->next = node;
 	lst->length++;
@@ -275,6 +276,45 @@ void	_sort_3(t_stacks *stacks)
 	}
 }
 
+t_node	*list_find_smallest(t_list *lst)
+{
+	t_node	*curr;
+	t_node	*smallest;
+
+	curr = lst->head;
+	smallest = curr;
+	if (!curr || curr == lst->tail)
+		return (curr);
+	while (curr)
+	{
+		if (curr->value < smallest->value)
+			smallest = curr;
+		curr = curr->next;
+		if (curr == lst->head)
+			break ;
+	}
+	return (smallest);
+}
+
+int	list_is_sorted(t_list *lst)
+{
+	t_node	*curr;
+
+	curr = lst->head;
+	if (!curr || curr == lst->tail)
+		return (1);
+	curr = curr->next;
+	while (curr)
+	{
+		if (curr->value < curr->prev->value)
+			return (0);
+		curr = curr->next;
+		if (curr == lst->head)
+			break ;
+	}
+	return (1);
+}
+
 // void	_sort(t_stacks *stacks)
 // {
 // 	
@@ -329,6 +369,7 @@ int	main(int argc, char **argv)
 			break;
 	}
 	ft_putstr_fd("---\n", 1);
+	printf("%d\n", list_is_sorted(stacks.stack_a));
 	// t_node *curr_b = stacks.stack_b->head;
 	// while (curr_b) {
 	// 	printf("%d\n", curr_b->value);
