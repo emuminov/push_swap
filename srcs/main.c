@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/24 02:33:18 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/24 02:40:48 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ typedef struct s_list
 {
 	t_node	*head;
 	t_node	*tail;
+	int		length;
 }	t_list;
 
 typedef struct s_stacks
@@ -79,19 +80,18 @@ t_list	*list_append(int num, t_list *lst)
 t_list	*list_init(int nums_len, char **nums)
 {
 	t_list	*lst;
-	int		i;
 
 	lst = malloc(sizeof(t_list));
 	if (!lst)
 		return (NULL);
 	lst->head = NULL;
 	lst->tail = NULL;
+	lst->length = 0;
 	if (nums_len == 0 || !nums)
 		return (lst);
-	i = 0;
-	while (i < nums_len)
+	while (lst->length < nums_len)
 	{
-		if (!list_append(ft_atoi(nums[i++]), lst))
+		if (!list_append(ft_atoi(nums[lst->length++]), lst))
 		{
 			list_free(lst);
 			return (NULL);
@@ -146,11 +146,13 @@ t_node	*list_unlink_head(t_list *lst)
 	{
 		lst->head = NULL;
 		lst->tail = NULL;
+		lst->length = 0;
 		return (node);
 	}
 	lst->head = node->next;
 	lst->head->prev = lst->tail;
 	lst->tail->next = lst->head;
+	lst->length--;
 	return (node);
 }
 
@@ -162,12 +164,14 @@ void	list_prepend_node(t_node *node, t_list *lst)
 		lst->tail = node;
 		node->next = node;
 		node->prev = node;
+		lst->length = 1;
 		return ;
 	}
 	node->next = lst->head;
 	node->prev = lst->tail;
 	lst->head = node;
 	lst->tail->next = node;
+	lst->length++;
 }
 
 void	_p(t_list *src_stack, t_list *dest_stack)
