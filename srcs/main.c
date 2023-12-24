@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/24 02:04:47 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/24 02:33:18 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,13 +102,18 @@ t_list	*list_init(int nums_len, char **nums)
 
 void	_s(t_list *stack)
 {
-	int	tmp;
+	t_node	*tmp;
 
 	if (!stack->head)
 		return ;
-	tmp = stack->head->value;
-	stack->head->value = stack->head->next->value;
-	stack->head->next->value = tmp;
+	tmp = stack->head;
+	stack->head = tmp->next;
+	tmp->prev = stack->head;
+	tmp->next = stack->head->next;
+	tmp->next->prev = tmp;
+	stack->head->next = tmp;
+	stack->head->prev = stack->tail;
+	stack->tail->next = stack->head;
 }
 
 void	sa(t_stacks *stacks)
@@ -270,8 +275,16 @@ void	_sort_3(t_stacks *stacks)
 // {
 // 	
 // }
-// 3 1 2 5 4
-// ra pb pb sa pb pa pa pa pa
+//    3 1 2 5 4  |
+// sa 1 3 2 5 4  |
+// pb 3 2 5 4    | 1
+// sa 2 3 5 4    | 1
+// pb 3 5 4      | 2 1
+// pb 5 4        | 3 2 1
+// sa 4 5        | 3 2 1
+// pa 3 4 5      | 2 1
+// pa 2 3 4 5    | 1
+// pa 1 2 3 4 5
 
 void	push_swap(int nums_len, t_stacks *stacks)
 {
