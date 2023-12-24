@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/22 11:46:34 by emuminov         ###   ########.fr       */
+/*   Updated: 2023/12/24 02:04:47 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,32 +130,49 @@ void	ss(t_stacks *stacks)
 	ft_putstr_fd("ss\n", STDOUT_FILENO);
 }
 
+t_node	*list_unlink_head(t_list *lst)
+{
+	t_node	*node;
+
+	node = lst->head;
+	if (!node)
+		return (NULL);
+	if (node && node == lst->tail)
+	{
+		lst->head = NULL;
+		lst->tail = NULL;
+		return (node);
+	}
+	lst->head = node->next;
+	lst->head->prev = lst->tail;
+	lst->tail->next = lst->head;
+	return (node);
+}
+
+void	list_prepend_node(t_node *node, t_list *lst)
+{
+	if (!lst->head || !lst->tail)
+	{
+		lst->head = node;
+		lst->tail = node;
+		node->next = node;
+		node->prev = node;
+		return ;
+	}
+	node->next = lst->head;
+	node->prev = lst->tail;
+	lst->head = node;
+	lst->tail->next = node;
+}
+
 void	_p(t_list *src_stack, t_list *dest_stack)
 {
-	t_node	*src_head;
-	t_node	*dest_head;
+	t_node	*pushed_node;
 
-	if (!src_stack->head || !src_stack->tail)
+	if (!src_stack->head)
 		return ;
-	src_head = src_stack->head;
-	dest_head = dest_stack->head;
-	src_stack->head = src_head->next;
-	src_stack->head->prev = src_head->prev;
-	src_stack->tail->next = src_stack->head;
-	if (!dest_stack->tail)
-	{
-		dest_stack->tail = src_head;
-		src_head->next = src_head;
-	}
-	else
-	{
-		dest_head->prev = src_head;
-		src_head->next = dest_head;
-		dest_stack->head->prev = src_head;
-		dest_stack->tail->next = src_head;
-	}
-	src_head->prev = dest_stack->tail;
-	dest_stack->head = src_head;
+	pushed_node = list_unlink_head(src_stack);
+	list_prepend_node(pushed_node, dest_stack);
 }
 
 void	pa(t_stacks *stacks)
@@ -283,9 +300,7 @@ int	main(int argc, char **argv)
 	pb(&stacks);
 	pb(&stacks);
 	sa(&stacks);
-	pb(&stacks);
-	pa(&stacks);
-	pa(&stacks);
+	rra(&stacks);
 	pa(&stacks);
 	pa(&stacks);
 	ft_putstr_fd("---\n", 1);
