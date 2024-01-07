@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2023/12/24 03:11:47 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/07 23:08:39 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,6 +276,7 @@ void	_sort_3(t_stacks *stacks)
 	}
 }
 
+// TODO: handle potential NULL errors here
 t_node	*list_find_smallest(t_list *lst)
 {
 	t_node	*curr;
@@ -315,10 +316,36 @@ int	list_is_sorted(t_list *lst)
 	return (1);
 }
 
-// void	_sort(t_stacks *stacks)
-// {
-// 	
-// }
+int		list_find_position(t_node *node, t_list *lst)
+{
+	int		i;
+	t_node	*curr;
+
+	i = 0;
+	curr = lst->head;
+	while (curr)
+	{
+		if (curr == node)
+			return (i);
+		curr = curr->next;
+		if (curr == lst->head)
+			break ;
+		i++;
+	}
+	return (-1);
+}
+
+void	_sort(t_stacks *stacks)
+{
+	t_node	*smallest;
+	int		pos;
+
+	while (!list_is_sorted(stacks->stack_a))
+	{
+		smallest = list_find_smallest(stacks->stack_a);
+		pos = list_find_position(smallest, stacks->stack_a);
+	}
+}
 //    3 1 2 5 4  |
 // sa 1 3 2 5 4  |
 // pb 3 2 5 4    | 1
@@ -328,7 +355,7 @@ int	list_is_sorted(t_list *lst)
 // sa 4 5        | 3 2 1
 // pa 3 4 5      | 2 1
 // pa 2 3 4 5    | 1
-// pa 1 2 3 4 5
+// pa 1 2 3 4 5  | SORTED
 
 void	push_swap(int nums_len, t_stacks *stacks)
 {
@@ -370,6 +397,7 @@ int	main(int argc, char **argv)
 	}
 	ft_putstr_fd("---\n", 1);
 	printf("%d\n", list_is_sorted(stacks.stack_a));
+	printf("%d\n", list_find_position(stacks.stack_a->tail->prev, stacks.stack_a));
 	// t_node *curr_b = stacks.stack_b->head;
 	// while (curr_b) {
 	// 	printf("%d\n", curr_b->value);
