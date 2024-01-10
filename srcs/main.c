@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/09 13:22:19 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/10 11:49:23 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,31 +251,6 @@ void	rrr(t_stacks *stacks)
 	ft_putstr_fd("rrr\n", STDOUT_FILENO);
 }
 
-void	_sort_3(t_stacks *stacks)
-{
-	t_list	*stack_a;
-
-	stack_a = stacks->stack_a;
-	if (stack_a->head->value == 1 && stack_a->tail->value == 3)
-		return ;
-	if (stack_a->head->value == 1 && stack_a->tail->value == 2)
-	{
-		rra(stacks);
-		return sa(stacks);
-	}
-	if (stack_a->head->value == 2 && stack_a->tail->value == 3)
-		return sa(stacks);
-	if (stack_a->head->value == 2 && stack_a->tail->value == 1)
-		return rra(stacks);
-	if (stack_a->head->value == 3 && stack_a->tail->value == 2)
-		return ra(stacks);
-	if (stack_a->head->value == 3 && stack_a->tail->value == 1)
-	{
-		sa(stacks);
-		return rra(stacks);
-	}
-}
-
 // TODO: handle case where lst or lst->head are NULL
 t_node	*list_find_smallest(t_list *lst)
 {
@@ -295,6 +270,26 @@ t_node	*list_find_smallest(t_list *lst)
 			break ;
 	}
 	return (smallest);
+}
+
+t_node	*list_find_biggest(t_list *lst)
+{
+	t_node	*curr;
+	t_node	*biggest;
+
+	curr = lst->head;
+	biggest = curr;
+	if (!curr || curr == lst->tail)
+		return (curr);
+	while (curr)
+	{
+		if (curr->value > biggest->value)
+			biggest = curr;
+		curr = curr->next;
+		if (curr == lst->head)
+			break ;
+	}
+	return (biggest);
 }
 
 int	list_is_sorted(t_list *lst)
@@ -335,13 +330,39 @@ int		list_find_position(t_node *node, t_list *lst)
 	return (-1);
 }
 
+void	_sort_3(t_stacks *stacks)
+{
+	t_node	*smallest;
+	t_node	*biggest;
+
+	smallest = list_find_smallest(stacks->stack_a);
+	biggest = list_find_biggest(stacks->stack_a);
+	if (stacks->stack_a->head == smallest && stacks->stack_a->tail == biggest)
+		return ;
+	if (stacks->stack_a->head == smallest && stacks->stack_a->tail != biggest)
+	{
+		rra(stacks);
+		return sa(stacks);
+	}
+	if (stacks->stack_a->head != smallest && stacks->stack_a->tail == biggest)
+		return sa(stacks);
+	if (stacks->stack_a->head != biggest && stacks->stack_a->tail == smallest)
+		return rra(stacks);
+	if (stacks->stack_a->head == biggest && stacks->stack_a->tail != smallest)
+		return ra(stacks);
+	if (stacks->stack_a->head == biggest && stacks->stack_a->tail == smallest)
+	{
+		sa(stacks);
+		return rra(stacks);
+	}
+}
+
 // TODO: handle error if smallest is NULL
 void	_sort(t_stacks *stacks)
 {
 	t_node	*smallest;
 	int		pos;
 
-	// push everything to stack b starting from the smallest
 	while (stacks->stack_a->length > 1)
 	{
 		smallest = list_find_smallest(stacks->stack_a);
@@ -349,10 +370,8 @@ void	_sort(t_stacks *stacks)
 		while (pos != 0)
 		{
 			if ((stacks->stack_a->length / 2) >= (pos + 1))
-				// move smallest to top
 				ra(stacks);
 			else if ((stacks->stack_a->length / 2) < (pos + 1))
-				// move smallest to bottom until wraps
 				rra(stacks);
 			pos = list_find_position(smallest, stacks->stack_a);
 		}
@@ -361,31 +380,6 @@ void	_sort(t_stacks *stacks)
 	while (stacks->stack_b->length > 0)
 		pa(stacks);
 }
-// NORMAL
-//    3 1 2 5 4  |
-// ra 1 2 5 4 3  |
-// pb 2 5 4 3    | 1
-// pb 5 4 3      | 2 1
-// rra 3 5 4     | 2 1
-// pb 5 4        | 3 2 1
-// ra 4 5        | 3 2 1
-// pb 5          | 4 3 2 1
-// pa 4 5        | 3 2 1
-// pa 3 4 5      | 2 1
-// pa 2 3 4 5    | 1
-// pa 1 2 3 4 5  | SORTED
-
-// IDEAL
-//    3 1 2 5 4  |
-// sa 1 3 2 5 4  |
-// pb 3 2 5 4    | 1
-// sa 2 3 5 4    | 1
-// pb 3 5 4      | 2 1
-// pb 5 4        | 3 2 1
-// sa 4 5        | 3 2 1
-// pa 3 4 5      | 2 1
-// pa 2 3 4 5    | 1
-// pa 1 2 3 4 5  | SORTED
 
 void	push_swap(int nums_len, t_stacks *stacks)
 {
@@ -409,33 +403,9 @@ int	main(int argc, char **argv)
 	stacks.stack_b = list_init(0, NULL);
 	if (!stacks.stack_b)
 		return (1);
-	// push_swap(argc - 1, &stacks);
-	// NORMAL
-	//    3 1 2 5 4  |
-	// ra 1 2 5 4 3  |
-	// pb 2 5 4 3    | 1
-	// pb 5 4 3      | 2 1
-	// rra 3 5 4     | 2 1
-	// pb 5 4        | 3 2 1
-	// ra 4 5        | 3 2 1
-	// pb 5          | 4 3 2 1
-	// pa 4 5        | 3 2 1
-	// pa 3 4 5      | 2 1
-	// pa 2 3 4 5    | 1
-	// pa 1 2 3 4 5  | SORTED
-	// ra(&stacks);
-	// pb(&stacks);
-	// pb(&stacks);
-	// rra(&stacks);
-	// pb(&stacks);
-	// ra(&stacks);
-	// pb(&stacks);
-	// pa(&stacks);
-	// pa(&stacks);
-	// pa(&stacks);
-	// pa(&stacks);
-	_sort(&stacks);
-	ft_putstr_fd("---\n", 1);
+	// _sort(&stacks);
+	_sort_3(&stacks);
+	// ft_putstr_fd("---\n", 1);
 	t_node *curr_a = stacks.stack_a->head;
 	while (curr_a) {
 		printf("%d\n", curr_a->value);
