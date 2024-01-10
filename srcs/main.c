@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/07 23:08:39 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/09 13:22:19 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,7 +276,7 @@ void	_sort_3(t_stacks *stacks)
 	}
 }
 
-// TODO: handle potential NULL errors here
+// TODO: handle case where lst or lst->head are NULL
 t_node	*list_find_smallest(t_list *lst)
 {
 	t_node	*curr;
@@ -335,17 +335,47 @@ int		list_find_position(t_node *node, t_list *lst)
 	return (-1);
 }
 
+// TODO: handle error if smallest is NULL
 void	_sort(t_stacks *stacks)
 {
 	t_node	*smallest;
 	int		pos;
 
-	while (!list_is_sorted(stacks->stack_a))
+	// push everything to stack b starting from the smallest
+	while (stacks->stack_a->length > 1)
 	{
 		smallest = list_find_smallest(stacks->stack_a);
 		pos = list_find_position(smallest, stacks->stack_a);
+		while (pos != 0)
+		{
+			if ((stacks->stack_a->length / 2) >= (pos + 1))
+				// move smallest to top
+				ra(stacks);
+			else if ((stacks->stack_a->length / 2) < (pos + 1))
+				// move smallest to bottom until wraps
+				rra(stacks);
+			pos = list_find_position(smallest, stacks->stack_a);
+		}
+		pb(stacks);
 	}
+	while (stacks->stack_b->length > 0)
+		pa(stacks);
 }
+// NORMAL
+//    3 1 2 5 4  |
+// ra 1 2 5 4 3  |
+// pb 2 5 4 3    | 1
+// pb 5 4 3      | 2 1
+// rra 3 5 4     | 2 1
+// pb 5 4        | 3 2 1
+// ra 4 5        | 3 2 1
+// pb 5          | 4 3 2 1
+// pa 4 5        | 3 2 1
+// pa 3 4 5      | 2 1
+// pa 2 3 4 5    | 1
+// pa 1 2 3 4 5  | SORTED
+
+// IDEAL
 //    3 1 2 5 4  |
 // sa 1 3 2 5 4  |
 // pb 3 2 5 4    | 1
@@ -380,13 +410,31 @@ int	main(int argc, char **argv)
 	if (!stacks.stack_b)
 		return (1);
 	// push_swap(argc - 1, &stacks);
-	ra(&stacks);
-	pb(&stacks);
-	pb(&stacks);
-	sa(&stacks);
-	rra(&stacks);
-	pa(&stacks);
-	pa(&stacks);
+	// NORMAL
+	//    3 1 2 5 4  |
+	// ra 1 2 5 4 3  |
+	// pb 2 5 4 3    | 1
+	// pb 5 4 3      | 2 1
+	// rra 3 5 4     | 2 1
+	// pb 5 4        | 3 2 1
+	// ra 4 5        | 3 2 1
+	// pb 5          | 4 3 2 1
+	// pa 4 5        | 3 2 1
+	// pa 3 4 5      | 2 1
+	// pa 2 3 4 5    | 1
+	// pa 1 2 3 4 5  | SORTED
+	// ra(&stacks);
+	// pb(&stacks);
+	// pb(&stacks);
+	// rra(&stacks);
+	// pb(&stacks);
+	// ra(&stacks);
+	// pb(&stacks);
+	// pa(&stacks);
+	// pa(&stacks);
+	// pa(&stacks);
+	// pa(&stacks);
+	_sort(&stacks);
 	ft_putstr_fd("---\n", 1);
 	t_node *curr_a = stacks.stack_a->head;
 	while (curr_a) {
@@ -397,7 +445,6 @@ int	main(int argc, char **argv)
 	}
 	ft_putstr_fd("---\n", 1);
 	printf("%d\n", list_is_sorted(stacks.stack_a));
-	printf("%d\n", list_find_position(stacks.stack_a->tail->prev, stacks.stack_a));
 	// t_node *curr_b = stacks.stack_b->head;
 	// while (curr_b) {
 	// 	printf("%d\n", curr_b->value);
