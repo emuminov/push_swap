@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/14 11:14:29 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/14 11:16:34 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -337,13 +337,8 @@ void	_sort_3(t_stacks *stacks)
 
 	smallest = list_find_smallest(stacks->stack_a);
 	biggest = list_find_biggest(stacks->stack_a);
-	if (stacks->stack_a->head == smallest && stacks->stack_a->tail == biggest)
-		return ;
 	if (stacks->stack_a->head == smallest && stacks->stack_a->tail != biggest)
-	{
-		rra(stacks);
-		return sa(stacks);
-	}
+		return (rra(stacks), sa(stacks));
 	if (stacks->stack_a->head != smallest && stacks->stack_a->tail == biggest)
 		return sa(stacks);
 	if (stacks->stack_a->head != biggest && stacks->stack_a->tail == smallest)
@@ -351,10 +346,7 @@ void	_sort_3(t_stacks *stacks)
 	if (stacks->stack_a->head == biggest && stacks->stack_a->tail != smallest)
 		return ra(stacks);
 	if (stacks->stack_a->head == biggest && stacks->stack_a->tail == smallest)
-	{
-		sa(stacks);
-		return rra(stacks);
-	}
+		return (sa(stacks), rra(stacks));
 }
 
 // TODO: handle error if smallest is NULL
@@ -405,7 +397,6 @@ int	main(int argc, char **argv)
 	if (!stacks.stack_b)
 		return (1);
 	_sort(&stacks);
-	// _sort_3(&stacks);
 	// ft_putstr_fd("---\n", 1);
 	t_node *curr_a = stacks.stack_a->head;
 	while (curr_a) {
