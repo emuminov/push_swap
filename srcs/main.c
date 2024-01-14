@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/10 11:49:23 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/14 11:14:29 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,20 +363,21 @@ void	_sort(t_stacks *stacks)
 	t_node	*smallest;
 	int		pos;
 
-	while (stacks->stack_a->length > 1)
+	while (stacks->stack_a->length > 3)
 	{
 		smallest = list_find_smallest(stacks->stack_a);
 		pos = list_find_position(smallest, stacks->stack_a);
 		while (pos != 0)
 		{
-			if ((stacks->stack_a->length / 2) >= (pos + 1))
+			if ((stacks->stack_a->length / 2) >= pos)
 				ra(stacks);
-			else if ((stacks->stack_a->length / 2) < (pos + 1))
+			else if ((stacks->stack_a->length / 2) < pos)
 				rra(stacks);
 			pos = list_find_position(smallest, stacks->stack_a);
 		}
 		pb(stacks);
 	}
+	_sort_3(stacks);
 	while (stacks->stack_b->length > 0)
 		pa(stacks);
 }
@@ -403,8 +404,8 @@ int	main(int argc, char **argv)
 	stacks.stack_b = list_init(0, NULL);
 	if (!stacks.stack_b)
 		return (1);
-	// _sort(&stacks);
-	_sort_3(&stacks);
+	_sort(&stacks);
+	// _sort_3(&stacks);
 	// ft_putstr_fd("---\n", 1);
 	t_node *curr_a = stacks.stack_a->head;
 	while (curr_a) {
