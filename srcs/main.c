@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/15 09:46:32 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/15 13:21:03 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -349,31 +349,6 @@ void	_sort_3(t_stacks *stacks)
 		return (sa(stacks), rra(stacks));
 }
 
-// TODO: handle error if smallest is NULL
-void	_sort(t_stacks *stacks)
-{
-	t_node	*smallest;
-	int		pos;
-
-	while (stacks->stack_a->length > 3)
-	{
-		smallest = list_find_smallest(stacks->stack_a);
-		pos = list_find_position(smallest, stacks->stack_a);
-		while (pos != 0)
-		{
-			if ((stacks->stack_a->length / 2) >= pos)
-				ra(stacks);
-			else if ((stacks->stack_a->length / 2) < pos)
-				rra(stacks);
-			pos = list_find_position(smallest, stacks->stack_a);
-		}
-		pb(stacks);
-	}
-	_sort_3(stacks);
-	while (stacks->stack_b->length > 0)
-		pa(stacks);
-}
-
 void	_bubble_sort(int nums_len, int *arr)
 {
 	int	i;
@@ -418,24 +393,128 @@ int	*copy_as_sorted(t_list *src)
 	return (res);
 }
 
-// void	_sort_10(t_stacks *stacks)
-// {
-// 	
-// }
+// TODO: handle error if smallest is NULL
+void	_sort(t_stacks *stacks)
+{
+	t_node	*smallest;
+	int		pos;
+
+	while (stacks->stack_a->length > 3)
+	{
+		smallest = list_find_smallest(stacks->stack_a);
+		pos = list_find_position(smallest, stacks->stack_a);
+		while (pos != 0)
+		{
+			if ((stacks->stack_a->length / 2) >= pos)
+				ra(stacks);
+			else if ((stacks->stack_a->length / 2) < pos)
+				rra(stacks);
+			pos = list_find_position(smallest, stacks->stack_a);
+		}
+		pb(stacks);
+	}
+	_sort_3(stacks);
+	while (stacks->stack_b->length > 0)
+		pa(stacks);
+}
+
+t_node	*list_find_smallest_pivot(int pivot, t_list *lst)
+{
+	t_node	*curr;
+
+	curr = lst->head;
+	if (!curr || curr == lst->tail)
+		return (curr);
+	while (curr)
+	{
+		if (curr->value <= pivot)
+			return (curr);
+		curr = curr->next;
+		if (curr == lst->head)
+			break ;
+	}
+	return (NULL);
+}
 
 #include <stdio.h>
+void	_sort_10(t_stacks *stacks)
+{
+	int		i;
+	int		pivot;
+	int		pos;
+	int		l;
+	int		*sorted;
+	t_node	*smallest;
+	t_node	*biggest;
+
+	//TODO: handle null error from copy_as_sorted
+	sorted = copy_as_sorted(stacks->stack_a);
+	i = 1;
+	l = stacks->stack_a->length;
+	while (i <= 3)
+	{
+		pivot = sorted[(l / 4) * i];
+		smallest = list_find_smallest_pivot(pivot, stacks->stack_a);
+		if (smallest)
+		{
+			pos = list_find_position(smallest, stacks->stack_a);
+			while (pos != 0)
+			{
+				if ((stacks->stack_a->length / 2) >= pos)
+					ra(stacks);
+				else if ((stacks->stack_a->length / 2) < pos)
+					rra(stacks);
+				pos = list_find_position(smallest, stacks->stack_a);
+			}
+			pb(stacks);
+		}
+		else
+			i++;
+	}
+	while (stacks->stack_a->length)
+		pb(stacks);
+	while (stacks->stack_b->length > 0)
+	{
+		biggest = list_find_biggest(stacks->stack_b);
+		pos = list_find_position(biggest, stacks->stack_b);
+		while (pos != 0)
+		{
+			if ((stacks->stack_b->length / 2) >= pos)
+				rb(stacks);
+			else if ((stacks->stack_b->length / 2) < pos)
+				rrb(stacks);
+			pos = list_find_position(biggest, stacks->stack_b);
+		}
+		pa(stacks);
+	}
+}
+// 0 1 2 3 4 5 6 7 8 9 10 11 12 || 13 / 4 = 3
+// 9 1 3 8 2 0 4 5 6 7 11 10 12
+// 1 3 8 2 0 4 5 6 7 11 10 12 9 | ra
+// 3 8 2 0 4 5 6 7 11 10 12 9   | pb  1
+// 8 2 0 4 5 6 7 11 10 12 9     | pb  3 1
+// 2 0 4 5 6 7 11 10 12 9 8     | ra  3 1
+// 0 4 5 6 7 11 10 12 9 8       | pb  2 3 1
+// 5 6 7 11 10 12 9 8           | pb  4 0 2 3 1
+// 6 7 11 10 12 9 8             | pb  5 4 0 2 3 1
+// 7 11 10 12 9 8               | pb  6 5 4 0 2 3 1
+// 11 10 12 9 8                 | pb  7 6 5 4 0 2 3 1
+// 8 11 10 12 9                 | rra 7 6 5 4 0 2 3 1
+// 11 10 12 9                   | pb  8 7 6 5 4 0 2 3 1
+// 9 11 10 12                   | rra 8 7 6 5 4 0 2 3 1
+// 11 10 12                     | pb  9 8 7 6 5 4 0 2 3 1
+// 10 12                        | pb 10 9 8 7 6 5 4 0 2 3 1
+// 12                           | pb 11 10 9 8 7 6 5 4 0 2 3 1
+//                              | pb 12 11 10 9 8 7 6 5 4 0 2 3 1
+
 void	push_swap(int nums_len, t_stacks *stacks)
 {
-	int	*sorted;
-
 	if (nums_len == 3)
 		return (_sort_3(stacks));
 	else if (nums_len <= 10)
 		return (_sort(stacks));
-	//TODO: handle null error from copy_as_sorted
-	sorted = copy_as_sorted(stacks->stack_a);
-	for (int i = 0; i < stacks->stack_a->length; i++)
-		printf("%d\n", sorted[i]);
+	else
+		return (_sort_10(stacks));
 }
 
 //TODO: refactor swapping functions into their own files
