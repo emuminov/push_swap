@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/14 11:16:34 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/15 09:46:32 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,44 +374,99 @@ void	_sort(t_stacks *stacks)
 		pa(stacks);
 }
 
+void	_bubble_sort(int nums_len, int *arr)
+{
+	int	i;
+	int	j;
+	int	temp;
+
+	i = 0;
+	while (i < nums_len - 1)
+	{
+		j = 0;
+		while (j < nums_len - i - 1)
+		{
+			if (arr[j] > arr[j + 1])
+			{
+				temp = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = temp;
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
+int	*copy_as_sorted(t_list *src)
+{
+	int		i;
+	t_node	*curr;
+	int		*res;
+
+	res = malloc(sizeof(int) * src->length);
+	if (!res)
+		return (NULL);
+	i = 0;
+	curr = src->head;
+	while (i < src->length)
+	{
+		res[i++] = curr->value;
+		curr = curr->next;
+	}
+	_bubble_sort(i, res);
+	return (res);
+}
+
+// void	_sort_10(t_stacks *stacks)
+// {
+// 	
+// }
+
+#include <stdio.h>
 void	push_swap(int nums_len, t_stacks *stacks)
 {
+	int	*sorted;
+
 	if (nums_len == 3)
-		return _sort_3(stacks);
+		return (_sort_3(stacks));
+	else if (nums_len <= 10)
+		return (_sort(stacks));
+	//TODO: handle null error from copy_as_sorted
+	sorted = copy_as_sorted(stacks->stack_a);
+	for (int i = 0; i < stacks->stack_a->length; i++)
+		printf("%d\n", sorted[i]);
 }
 
 //TODO: refactor swapping functions into their own files
 //TODO: store more information on structs (len, smallest, biggest etc)
 //TODO: add error checking
-#include <stdio.h>
+//TODO: add handling of both multiple arguments and a single string
 int	main(int argc, char **argv)
 {
-	if (argc < 2)
-		return (0);
 	t_stacks	stacks;
 
+	if (argc == 2)
+	{
+		
+	}
+	if (argc < 2)
+		return (0);
 	stacks.stack_a = list_init(argc - 1, &argv[1]);
 	if (!stacks.stack_a)
 		return (1);
 	stacks.stack_b = list_init(0, NULL);
 	if (!stacks.stack_b)
+	{
+		list_free(stacks.stack_a);
 		return (1);
-	_sort(&stacks);
-	// ft_putstr_fd("---\n", 1);
-	t_node *curr_a = stacks.stack_a->head;
-	while (curr_a) {
-		printf("%d\n", curr_a->value);
-		curr_a = curr_a->next;
-		if (curr_a == stacks.stack_a->head)
-			break;
 	}
-	ft_putstr_fd("---\n", 1);
-	printf("%d\n", list_is_sorted(stacks.stack_a));
-	// t_node *curr_b = stacks.stack_b->head;
-	// while (curr_b) {
-	// 	printf("%d\n", curr_b->value);
-	// 	curr_b = curr_b->next;
-	// 	if (curr_b == stacks.stack_b->head)
+	push_swap(argc - 1, &stacks);
+	// t_node *curr_a = stacks.stack_a->head;
+	// while (curr_a) {
+	// 	printf("%d\n", curr_a->value);
+	// 	curr_a = curr_a->next;
+	// 	if (curr_a == stacks.stack_a->head)
 	// 		break;
 	// }
 }
