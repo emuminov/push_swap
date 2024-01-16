@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/15 13:21:03 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/16 17:05:15 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -437,7 +437,7 @@ t_node	*list_find_smallest_pivot(int pivot, t_list *lst)
 }
 
 #include <stdio.h>
-void	_sort_10(t_stacks *stacks)
+void	_sort_10(int num_of_chunks, t_stacks *stacks)
 {
 	int		i;
 	int		pivot;
@@ -451,9 +451,9 @@ void	_sort_10(t_stacks *stacks)
 	sorted = copy_as_sorted(stacks->stack_a);
 	i = 1;
 	l = stacks->stack_a->length;
-	while (i <= 3)
+	while (i <= num_of_chunks - 1)
 	{
-		pivot = sorted[(l / 4) * i];
+		pivot = sorted[(l / num_of_chunks) * i];
 		smallest = list_find_smallest_pivot(pivot, stacks->stack_a);
 		if (smallest)
 		{
@@ -514,8 +514,28 @@ void	push_swap(int nums_len, t_stacks *stacks)
 	else if (nums_len <= 10)
 		return (_sort(stacks));
 	else
-		return (_sort_10(stacks));
+		return (_sort_10(8, stacks));
 }
+// number of chunks: 4
+// 15:  52   55   51   60   65   59
+// 50:  306  290  289  312  262  300
+// 100: 720  743  721  688  738  714
+// 250: 2708 2536 2611 2659 2605 2674
+// 500: 6795 6961 6853 6829 6945 6934
+
+// number of chunks: 5
+// 15:  62   61   57   56   51   52
+// 50:  279  266  304  273  290  301
+// 100: 755  739  749  723  735  740
+// 250: 2640 2637 2642 2624 2626 2549
+// 500: 6966 6879 6913 6972 6895 6850
+
+// number of chunks: 6
+// 15:  62   61   57   56   51   52
+// 50:  279  266  304  273  290  301
+// 100: 755  739  749  723  735  740
+// 250: 2640 2637 2642 2624 2626 2549
+// 500: 6966 6879 6913 6972 6895 6850
 
 //TODO: refactor swapping functions into their own files
 //TODO: store more information on structs (len, smallest, biggest etc)
