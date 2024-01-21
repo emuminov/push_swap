@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/16 17:05:15 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/22 00:28:45 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -418,7 +418,7 @@ void	_sort(t_stacks *stacks)
 		pa(stacks);
 }
 
-t_node	*list_find_smallest_pivot(int pivot, t_list *lst)
+t_node	*list_find_value_in_range(int lower, int upper, t_list *lst)
 {
 	t_node	*curr;
 
@@ -427,7 +427,7 @@ t_node	*list_find_smallest_pivot(int pivot, t_list *lst)
 		return (curr);
 	while (curr)
 	{
-		if (curr->value <= pivot)
+		if (curr->value >= lower && curr->value <= upper)
 			return (curr);
 		curr = curr->next;
 		if (curr == lst->head)
@@ -436,11 +436,28 @@ t_node	*list_find_smallest_pivot(int pivot, t_list *lst)
 	return (NULL);
 }
 
+// 1-25   | (100 / 4) * 0 | (100 / 4) * 1
+// 26-50  | (100 / 4) * 1 | (100 / 4) * 2
+// 51-75  | (100 / 4) * 2 | (100 / 4) * 3
+// 76-100 | (100 / 4) * 3 | (100 / 4) * 4
+int	chunk_get_lower(int chunk_index, int num_of_chunks, int arr_length, int *arr)
+{
+	return (arr[(arr_length / num_of_chunks) * (chunk_index - 1)]);
+}
+
+int	chunk_get_upper(int chunk_index, int num_of_chunks, int arr_length, int *arr)
+{
+	if (chunk_index == num_of_chunks)
+		return (arr[arr_length - 1]);
+	return (arr[(arr_length / num_of_chunks) * chunk_index]);
+}
+
 #include <stdio.h>
 void	_sort_10(int num_of_chunks, t_stacks *stacks)
 {
 	int		i;
-	int		pivot;
+	int		lower_chunk;
+	int		upper_chunk;
 	int		pos;
 	int		l;
 	int		*sorted;
@@ -449,12 +466,15 @@ void	_sort_10(int num_of_chunks, t_stacks *stacks)
 
 	//TODO: handle null error from copy_as_sorted
 	sorted = copy_as_sorted(stacks->stack_a);
-	i = 1;
+	i = 0;
 	l = stacks->stack_a->length;
-	while (i <= num_of_chunks - 1)
+	while (i < (num_of_chunks / 2))
 	{
-		pivot = sorted[(l / num_of_chunks) * i];
-		smallest = list_find_smallest_pivot(pivot, stacks->stack_a);
+		lower_chunk = (num_of_chunks / 2) - i;
+		upper_chunk = (num_of_chunks / 2) + i + 1;
+		smallest = list_find_value_in_range(chunk_get_lower(lower_chunk, num_of_chunks, l, sorted), chunk_get_upper(upper_chunk, num_of_chunks, l, sorted), stacks->stack_a);
+		// printf("%d\n", chunk_get_lower(lower_chunk, num_of_chunks, l, sorted));
+		// printf("%d\n", chunk_get_upper(upper_chunk, num_of_chunks, l, sorted));
 		if (smallest)
 		{
 			pos = list_find_position(smallest, stacks->stack_a);
@@ -467,6 +487,8 @@ void	_sort_10(int num_of_chunks, t_stacks *stacks)
 				pos = list_find_position(smallest, stacks->stack_a);
 			}
 			pb(stacks);
+			if (stacks->stack_b->head->value < chunk_get_lower(upper_chunk, num_of_chunks, l, sorted))
+				rb(stacks);
 		}
 		else
 			i++;
@@ -488,6 +510,21 @@ void	_sort_10(int num_of_chunks, t_stacks *stacks)
 		pa(stacks);
 	}
 }
+
+// 1-25   | (100 / 4) * 0 | (100 / 4) * 1
+// 26-50  | (100 / 4) * 1 | (100 / 4) * 2
+// 51-75  | (100 / 4) * 2 | (100 / 4) * 3
+// 76-100 | (100 / 4) * 3 | (100 / 4) * 4
+
+// 1-12
+// 13-25
+// 26-38
+// 39-51
+// 52-64
+// 65-77
+// 78-90
+// 90-100
+
 // 0 1 2 3 4 5 6 7 8 9 10 11 12 || 13 / 4 = 3
 // 9 1 3 8 2 0 4 5 6 7 11 10 12
 // 1 3 8 2 0 4 5 6 7 11 10 12 9 | ra
@@ -514,28 +551,10 @@ void	push_swap(int nums_len, t_stacks *stacks)
 	else if (nums_len <= 10)
 		return (_sort(stacks));
 	else
-		return (_sort_10(8, stacks));
+		// 8 works best for 100
+		// 16 works best for 500
+		return (_sort_10(16, stacks));
 }
-// number of chunks: 4
-// 15:  52   55   51   60   65   59
-// 50:  306  290  289  312  262  300
-// 100: 720  743  721  688  738  714
-// 250: 2708 2536 2611 2659 2605 2674
-// 500: 6795 6961 6853 6829 6945 6934
-
-// number of chunks: 5
-// 15:  62   61   57   56   51   52
-// 50:  279  266  304  273  290  301
-// 100: 755  739  749  723  735  740
-// 250: 2640 2637 2642 2624 2626 2549
-// 500: 6966 6879 6913 6972 6895 6850
-
-// number of chunks: 6
-// 15:  62   61   57   56   51   52
-// 50:  279  266  304  273  290  301
-// 100: 755  739  749  723  735  740
-// 250: 2640 2637 2642 2624 2626 2549
-// 500: 6966 6879 6913 6972 6895 6850
 
 //TODO: refactor swapping functions into their own files
 //TODO: store more information on structs (len, smallest, biggest etc)
