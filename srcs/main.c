@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/22 00:28:45 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/01/22 00:56:09 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -418,22 +418,50 @@ void	_sort(t_stacks *stacks)
 		pa(stacks);
 }
 
+// TODO: handle all possible errors
 t_node	*list_find_value_in_range(int lower, int upper, t_list *lst)
 {
+	int		top_cost;
+	int		bottom_cost;
+	t_node	*top;
+	t_node	*bottom;
 	t_node	*curr;
 
 	curr = lst->head;
 	if (!curr || curr == lst->tail)
 		return (curr);
+	top_cost = 0;
+	bottom_cost = 0;
+	top = NULL;
+	bottom = NULL;
 	while (curr)
 	{
 		if (curr->value >= lower && curr->value <= upper)
-			return (curr);
+		{
+			top = curr;
+			break ;
+		}
 		curr = curr->next;
+		top_cost++;
 		if (curr == lst->head)
 			break ;
 	}
-	return (NULL);
+	curr = lst->tail;
+	while (curr)
+	{
+		if (curr->value >= lower && curr->value <= upper)
+		{
+			bottom = curr;
+			break ;
+		}
+		curr = curr->prev;
+		bottom_cost++;
+		if (curr == lst->tail)
+			break ;
+	}
+	if (top_cost <= bottom_cost)
+		return (top);
+	return (bottom);
 }
 
 // 1-25   | (100 / 4) * 0 | (100 / 4) * 1
