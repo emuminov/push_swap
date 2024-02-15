@@ -6,9 +6,12 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/01/22 00:56:09 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/15 07:43:58 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+// TODO: REMOVE!!!!!!!!!!!!!!!
+#include <stdio.h>
 
 #include <stdlib.h>
 #include "../libft/libft.h"
@@ -330,25 +333,6 @@ int		list_find_position(t_node *node, t_list *lst)
 	return (-1);
 }
 
-void	_sort_3(t_stacks *stacks)
-{
-	t_node	*smallest;
-	t_node	*biggest;
-
-	smallest = list_find_smallest(stacks->stack_a);
-	biggest = list_find_biggest(stacks->stack_a);
-	if (stacks->stack_a->head == smallest && stacks->stack_a->tail != biggest)
-		return (rra(stacks), sa(stacks));
-	if (stacks->stack_a->head != smallest && stacks->stack_a->tail == biggest)
-		return sa(stacks);
-	if (stacks->stack_a->head != biggest && stacks->stack_a->tail == smallest)
-		return rra(stacks);
-	if (stacks->stack_a->head == biggest && stacks->stack_a->tail != smallest)
-		return ra(stacks);
-	if (stacks->stack_a->head == biggest && stacks->stack_a->tail == smallest)
-		return (sa(stacks), rra(stacks));
-}
-
 void	_bubble_sort(int nums_len, int *arr)
 {
 	int	i;
@@ -393,8 +377,27 @@ int	*copy_as_sorted(t_list *src)
 	return (res);
 }
 
+void	_sort_3(t_stacks *stacks)
+{
+	t_node	*smallest;
+	t_node	*biggest;
+
+	smallest = list_find_smallest(stacks->stack_a);
+	biggest = list_find_biggest(stacks->stack_a);
+	if (stacks->stack_a->head == smallest && stacks->stack_a->tail != biggest)
+		return (rra(stacks), sa(stacks));
+	if (stacks->stack_a->head != smallest && stacks->stack_a->tail == biggest)
+		return sa(stacks);
+	if (stacks->stack_a->head != biggest && stacks->stack_a->tail == smallest)
+		return rra(stacks);
+	if (stacks->stack_a->head == biggest && stacks->stack_a->tail != smallest)
+		return ra(stacks);
+	if (stacks->stack_a->head == biggest && stacks->stack_a->tail == smallest)
+		return (sa(stacks), rra(stacks));
+}
+
 // TODO: handle error if smallest is NULL
-void	_sort(t_stacks *stacks)
+void	_simple_sort(int n, t_stacks *stacks)
 {
 	t_node	*smallest;
 	int		pos;
@@ -407,15 +410,18 @@ void	_sort(t_stacks *stacks)
 		{
 			if ((stacks->stack_a->length / 2) >= pos)
 				ra(stacks);
-			else if ((stacks->stack_a->length / 2) < pos)
+			else
 				rra(stacks);
 			pos = list_find_position(smallest, stacks->stack_a);
 		}
 		pb(stacks);
 	}
 	_sort_3(stacks);
-	while (stacks->stack_b->length > 0)
+	while (n - 3 > 0)
+	{
 		pa(stacks);
+		n--;
+	}
 }
 
 // TODO: handle all possible errors
@@ -431,7 +437,7 @@ t_node	*list_find_value_in_range(int lower, int upper, t_list *lst)
 	if (!curr || curr == lst->tail)
 		return (curr);
 	top_cost = 0;
-	bottom_cost = 0;
+	bottom_cost = 1;
 	top = NULL;
 	bottom = NULL;
 	while (curr)
@@ -464,10 +470,11 @@ t_node	*list_find_value_in_range(int lower, int upper, t_list *lst)
 	return (bottom);
 }
 
-// 1-25   | (100 / 4) * 0 | (100 / 4) * 1
-// 26-50  | (100 / 4) * 1 | (100 / 4) * 2
-// 51-75  | (100 / 4) * 2 | (100 / 4) * 3
-// 76-100 | (100 / 4) * 3 | (100 / 4) * 4
+// 0-19   | (100 / 5) * 0 | (100 / 5) * 1 - 1
+// 20-39  | (100 / 5) * 1 | (100 / 5) * 2 - 1
+// 40-59  | (100 / 5) * 2 | (100 / 5) * 3 - 1
+// 60-79  | (100 / 5) * 3 | (100 / 5) * 4 - 1
+// 80-99  | (100 / 5) * 4 | (100 / 5) * 5 - 1
 int	chunk_get_lower(int chunk_index, int num_of_chunks, int arr_length, int *arr)
 {
 	return (arr[(arr_length / num_of_chunks) * (chunk_index - 1)]);
@@ -477,11 +484,10 @@ int	chunk_get_upper(int chunk_index, int num_of_chunks, int arr_length, int *arr
 {
 	if (chunk_index == num_of_chunks)
 		return (arr[arr_length - 1]);
-	return (arr[(arr_length / num_of_chunks) * chunk_index]);
+	return (arr[((arr_length / num_of_chunks) * chunk_index) - 1]);
 }
 
-#include <stdio.h>
-void	_sort_10(int num_of_chunks, t_stacks *stacks)
+void	_optimal_sort(int num_of_chunks, t_stacks *stacks)
 {
 	int		i;
 	int		lower_chunk;
@@ -501,10 +507,10 @@ void	_sort_10(int num_of_chunks, t_stacks *stacks)
 		lower_chunk = (num_of_chunks / 2) - i;
 		upper_chunk = (num_of_chunks / 2) + i + 1;
 		smallest = list_find_value_in_range(chunk_get_lower(lower_chunk, num_of_chunks, l, sorted), chunk_get_upper(upper_chunk, num_of_chunks, l, sorted), stacks->stack_a);
-		// printf("%d\n", chunk_get_lower(lower_chunk, num_of_chunks, l, sorted));
-		// printf("%d\n", chunk_get_upper(upper_chunk, num_of_chunks, l, sorted));
 		if (smallest)
 		{
+			// ft_putnbr_fd(smallest->value, 1);
+			// ft_putstr_fd("\n", 1);
 			pos = list_find_position(smallest, stacks->stack_a);
 			while (pos != 0)
 			{
@@ -539,20 +545,6 @@ void	_sort_10(int num_of_chunks, t_stacks *stacks)
 	}
 }
 
-// 1-25   | (100 / 4) * 0 | (100 / 4) * 1
-// 26-50  | (100 / 4) * 1 | (100 / 4) * 2
-// 51-75  | (100 / 4) * 2 | (100 / 4) * 3
-// 76-100 | (100 / 4) * 3 | (100 / 4) * 4
-
-// 1-12
-// 13-25
-// 26-38
-// 39-51
-// 52-64
-// 65-77
-// 78-90
-// 90-100
-
 // 0 1 2 3 4 5 6 7 8 9 10 11 12 || 13 / 4 = 3
 // 9 1 3 8 2 0 4 5 6 7 11 10 12
 // 1 3 8 2 0 4 5 6 7 11 10 12 9 | ra
@@ -572,17 +564,22 @@ void	_sort_10(int num_of_chunks, t_stacks *stacks)
 // 12                           | pb 11 10 9 8 7 6 5 4 0 2 3 1
 //                              | pb 12 11 10 9 8 7 6 5 4 0 2 3 1
 
-void	push_swap(int nums_len, t_stacks *stacks)
+void	push_swap(t_stacks *stacks)
 {
-	if (nums_len == 3)
+	if (stacks->stack_a->length == 3)
 		return (_sort_3(stacks));
-	else if (nums_len <= 10)
-		return (_sort(stacks));
+	else if (stacks->stack_a->length <= 10)
+		return (_simple_sort(stacks->stack_a->length, stacks));
 	else
 		// 8 works best for 100
 		// 16 works best for 500
-		return (_sort_10(16, stacks));
+		return (_optimal_sort(8, stacks));
 }
+
+// [115-150]
+// 147
+// 138 147
+//
 
 //TODO: refactor swapping functions into their own files
 //TODO: store more information on structs (len, smallest, biggest etc)
@@ -607,7 +604,7 @@ int	main(int argc, char **argv)
 		list_free(stacks.stack_a);
 		return (1);
 	}
-	push_swap(argc - 1, &stacks);
+	push_swap(&stacks);
 	// t_node *curr_a = stacks.stack_a->head;
 	// while (curr_a) {
 	// 	printf("%d\n", curr_a->value);
