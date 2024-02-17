@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/15 07:43:58 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/17 15:45:19 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,14 @@ typedef struct s_stacks
 	t_list	*stack_a;
 	t_list	*stack_b;
 }	t_stacks;
+
+typedef struct s_move
+{
+	int	ra;
+	int	rb;
+	int	rra;
+	int	rrb;
+}	t_move;
 
 void	list_free(t_list *lst)
 {
@@ -377,6 +385,35 @@ int	*copy_as_sorted(t_list *src)
 	return (res);
 }
 
+void	stack_a_rotate_to_top(t_node *node, t_stacks *stacks)
+{
+	int	pos;
+
+	pos = list_find_position(node, stacks->stack_a);
+	while (pos > 0)
+	{
+		if ((stacks->stack_a->length / 2) >= pos)
+			ra(stacks);
+		else if ((stacks->stack_a->length / 2) < pos)
+			rra(stacks);
+		pos = list_find_position(node, stacks->stack_a);
+	}
+}
+
+void	stack_b_rotate_to_top(t_node *node, t_stacks *stacks)
+{
+	int	pos;
+
+	pos = list_find_position(node, stacks->stack_b);
+	while (pos > 0)
+	{
+		if ((stacks->stack_b->length / 2) >= pos)
+			rb(stacks);
+		else if ((stacks->stack_b->length / 2) < pos)
+			rrb(stacks);
+		pos = list_find_position(node, stacks->stack_b);
+	}
+}
 void	_sort_3(t_stacks *stacks)
 {
 	t_node	*smallest;
@@ -396,24 +433,16 @@ void	_sort_3(t_stacks *stacks)
 		return (sa(stacks), rra(stacks));
 }
 
+// note: sweet spot for usage in optimal sort is n == 6
 // TODO: handle error if smallest is NULL
 void	_simple_sort(int n, t_stacks *stacks)
 {
 	t_node	*smallest;
-	int		pos;
 
 	while (stacks->stack_a->length > 3)
 	{
 		smallest = list_find_smallest(stacks->stack_a);
-		pos = list_find_position(smallest, stacks->stack_a);
-		while (pos != 0)
-		{
-			if ((stacks->stack_a->length / 2) >= pos)
-				ra(stacks);
-			else
-				rra(stacks);
-			pos = list_find_position(smallest, stacks->stack_a);
-		}
+		stack_a_rotate_to_top(smallest, stacks);
 		pb(stacks);
 	}
 	_sort_3(stacks);
@@ -487,12 +516,12 @@ int	chunk_get_upper(int chunk_index, int num_of_chunks, int arr_length, int *arr
 	return (arr[((arr_length / num_of_chunks) * chunk_index) - 1]);
 }
 
+
 void	_optimal_sort(int num_of_chunks, t_stacks *stacks)
 {
 	int		i;
 	int		lower_chunk;
 	int		upper_chunk;
-	int		pos;
 	int		l;
 	int		*sorted;
 	t_node	*smallest;
@@ -502,24 +531,14 @@ void	_optimal_sort(int num_of_chunks, t_stacks *stacks)
 	sorted = copy_as_sorted(stacks->stack_a);
 	i = 0;
 	l = stacks->stack_a->length;
-	while (i < (num_of_chunks / 2))
+	while (i < (num_of_chunks / 2) && stacks->stack_a->length > 6)
 	{
 		lower_chunk = (num_of_chunks / 2) - i;
 		upper_chunk = (num_of_chunks / 2) + i + 1;
 		smallest = list_find_value_in_range(chunk_get_lower(lower_chunk, num_of_chunks, l, sorted), chunk_get_upper(upper_chunk, num_of_chunks, l, sorted), stacks->stack_a);
 		if (smallest)
 		{
-			// ft_putnbr_fd(smallest->value, 1);
-			// ft_putstr_fd("\n", 1);
-			pos = list_find_position(smallest, stacks->stack_a);
-			while (pos != 0)
-			{
-				if ((stacks->stack_a->length / 2) >= pos)
-					ra(stacks);
-				else if ((stacks->stack_a->length / 2) < pos)
-					rra(stacks);
-				pos = list_find_position(smallest, stacks->stack_a);
-			}
+			stack_a_rotate_to_top(smallest, stacks);
 			pb(stacks);
 			if (stacks->stack_b->head->value < chunk_get_lower(upper_chunk, num_of_chunks, l, sorted))
 				rb(stacks);
@@ -527,20 +546,11 @@ void	_optimal_sort(int num_of_chunks, t_stacks *stacks)
 		else
 			i++;
 	}
-	while (stacks->stack_a->length)
-		pb(stacks);
+	_simple_sort(stacks->stack_a->length, stacks);
 	while (stacks->stack_b->length > 0)
 	{
 		biggest = list_find_biggest(stacks->stack_b);
-		pos = list_find_position(biggest, stacks->stack_b);
-		while (pos != 0)
-		{
-			if ((stacks->stack_b->length / 2) >= pos)
-				rb(stacks);
-			else if ((stacks->stack_b->length / 2) < pos)
-				rrb(stacks);
-			pos = list_find_position(biggest, stacks->stack_b);
-		}
+		stack_b_rotate_to_top(biggest, stacks);
 		pa(stacks);
 	}
 }
@@ -570,10 +580,12 @@ void	push_swap(t_stacks *stacks)
 		return (_sort_3(stacks));
 	else if (stacks->stack_a->length <= 10)
 		return (_simple_sort(stacks->stack_a->length, stacks));
-	else
-		// 8 works best for 100
-		// 16 works best for 500
+	else if (stacks->stack_a->length <= 200)
+		// 8 or 10 works best for 100
+		// 16 or 20 works best for 500
 		return (_optimal_sort(8, stacks));
+	else
+		return (_optimal_sort(18, stacks));
 }
 
 // [115-150]
