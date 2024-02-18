@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/17 15:45:19 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/18 20:34:04 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_move
 	int	rb;
 	int	rra;
 	int	rrb;
+	int	total;
 }	t_move;
 
 void	list_free(t_list *lst)
@@ -390,14 +391,15 @@ void	stack_a_rotate_to_top(t_node *node, t_stacks *stacks)
 	int	pos;
 
 	pos = list_find_position(node, stacks->stack_a);
-	while (pos > 0)
+	if ((stacks->stack_a->length / 2) >= pos)
 	{
-		if ((stacks->stack_a->length / 2) >= pos)
+		while (pos--)
 			ra(stacks);
-		else if ((stacks->stack_a->length / 2) < pos)
-			rra(stacks);
-		pos = list_find_position(node, stacks->stack_a);
+		return ;
 	}
+	pos = stacks->stack_a->length - pos;
+	while (pos--)
+		rra(stacks);
 }
 
 void	stack_b_rotate_to_top(t_node *node, t_stacks *stacks)
@@ -516,6 +518,46 @@ int	chunk_get_upper(int chunk_index, int num_of_chunks, int arr_length, int *arr
 	return (arr[((arr_length / num_of_chunks) * chunk_index) - 1]);
 }
 
+t_node	*list_find_target(t_node *node, t_list *lst)
+{
+	t_node	*curr;
+	t_node	*target;
+	t_node	*smallest;
+
+	curr = lst->head;
+	target = list_find_biggest(lst);
+	smallest = curr;
+	while (curr)
+	{
+		if (curr->value < smallest->value)
+			smallest = curr;
+		if ((curr->value > node->value) && (curr->value < target->value))
+			target = curr;
+		curr = curr->next;
+		if (curr == lst->head || (target->value - node->value) == 1)
+			break ;
+	}
+	if (target->value < node->value)
+		return (smallest);
+	return (target);
+}
+
+int	move_total(t_move *move)
+{
+	int	total_rx;
+	int total_rrx;
+
+	if (move->ra > move->rb)
+		total_rx = move->ra;
+	else
+		total_rx = move->rb;
+	if (move->rra > move->rrb)
+		total_rrx = move->rra;
+	else
+		total_rrx = move->rrb;
+	move->total = total_rx + total_rrx;
+	return (move->total);
+}
 
 void	_optimal_sort(int num_of_chunks, t_stacks *stacks)
 {
@@ -525,7 +567,7 @@ void	_optimal_sort(int num_of_chunks, t_stacks *stacks)
 	int		l;
 	int		*sorted;
 	t_node	*smallest;
-	t_node	*biggest;
+	// t_node	*biggest;
 
 	//TODO: handle null error from copy_as_sorted
 	sorted = copy_as_sorted(stacks->stack_a);
@@ -547,13 +589,72 @@ void	_optimal_sort(int num_of_chunks, t_stacks *stacks)
 			i++;
 	}
 	_simple_sort(stacks->stack_a->length, stacks);
-	while (stacks->stack_b->length > 0)
+
+	// find best move
+	while (stacks->stack_b->length)
 	{
-		biggest = list_find_biggest(stacks->stack_b);
-		stack_b_rotate_to_top(biggest, stacks);
+		t_move best_move = {0, 0, 0, 0, -1};
+		t_move curr_move = {0, 0, 0, 0, 0};
+		t_node *curr = stacks->stack_b->head;
+		while(curr)
+		{
+			// find target node for current node
+			curr_move.ra = 0;
+			curr_move.rra = 0;
+			curr_move.rb = 0;
+			curr_move.rra = 0;
+			curr_move.total = 0;
+			t_node *target = list_find_target(curr, stacks->stack_a);
+			int target_pos = list_find_position(target, stacks->stack_a);
+			int curr_pos = list_find_position(curr, stacks->stack_b);
+			if (curr_pos <= (stacks->stack_b->length / 2))
+				curr_move.rb = curr_pos;
+			else
+				curr_move.rrb = stacks->stack_b->length - curr_pos;
+			if (target_pos <= (stacks->stack_a->length / 2))
+				curr_move.ra = target_pos;
+			else
+				curr_move.rra = stacks->stack_a->length - target_pos;
+			if (best_move.total == -1 || move_total(&best_move) > move_total(&curr_move))
+				best_move = curr_move;
+			curr = curr->next;
+			if (curr == stacks->stack_b->head)
+				break ;
+		}
+
+		// apply best move
+		while (best_move.ra && best_move.rb)
+		{
+			best_move.ra--;
+			best_move.rb--;
+			rr(stacks);
+		}
+		while (best_move.rra && best_move.rrb)
+		{
+			best_move.rra--;
+			best_move.rrb--;
+			rrr(stacks);
+		}
+		while (best_move.ra--)
+			ra(stacks);
+		while (best_move.rb--)
+			rb(stacks);
+		while (best_move.rra--)
+			rra(stacks);
+		while (best_move.rrb--)
+			rrb(stacks);
 		pa(stacks);
 	}
+
+	// adjust the stack
+	smallest = list_find_smallest(stacks->stack_a);
+	stack_a_rotate_to_top(smallest, stacks);
 }
+//
+// t_move	calculate_move(t_node *node, t_stacks *stacks)
+// {
+// 	
+// }
 
 // 0 1 2 3 4 5 6 7 8 9 10 11 12 || 13 / 4 = 3
 // 9 1 3 8 2 0 4 5 6 7 11 10 12
@@ -583,9 +684,9 @@ void	push_swap(t_stacks *stacks)
 	else if (stacks->stack_a->length <= 200)
 		// 8 or 10 works best for 100
 		// 16 or 20 works best for 500
-		return (_optimal_sort(8, stacks));
+		return (_optimal_sort(2, stacks));
 	else
-		return (_optimal_sort(18, stacks));
+		return (_optimal_sort(4, stacks));
 }
 
 // [115-150]
