@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/19 13:30:14 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/19 15:21:55 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,7 +342,7 @@ int		list_find_position(t_node *node, t_list *lst)
 	return (-1);
 }
 
-void	_bubble_sort(int nums_len, int *arr)
+void	bubble_sort(int nums_len, int *arr)
 {
 	int	i;
 	int	j;
@@ -382,7 +382,7 @@ int	*copy_as_sorted(t_list *src)
 		res[i++] = curr->value;
 		curr = curr->next;
 	}
-	_bubble_sort(i, res);
+	bubble_sort(i, res);
 	return (res);
 }
 
@@ -626,30 +626,32 @@ void	move_calculate(t_node *node, t_stacks *stacks, t_move *move)
 	move_total(move);
 }
 
-t_move	*move_find_best(t_stacks *stacks)
+t_move	move_find_best(t_stacks *stacks)
 {
-	t_move	*best_move;
-	t_move	*curr_move;
+	t_move	best_move;
+	t_move	curr_move;
 
-	// TODO: handle error
-	best_move = malloc(sizeof(t_move));
-	curr_move = malloc(sizeof(t_move));
-	move_init(best_move);
+	move_init(&best_move);
 	t_node *curr = stacks->stack_b->head;
 	while(curr)
 	{
 		// find target node for current node
-		move_init(curr_move);
-		move_calculate(curr, stacks, curr_move);
-		if (best_move->total > curr_move->total)
-			move_copy(best_move, curr_move);
+		move_init(&curr_move);
+		move_calculate(curr, stacks, &curr_move);
+		if (best_move.total > curr_move.total)
+			move_copy(&best_move, &curr_move);
 		curr = curr->next;
-		if (curr == stacks->stack_b->head || best_move->total < 2)
+		if (curr == stacks->stack_b->head || best_move.total < 2)
 			break ;
 	}
-	free(curr_move);
 	return (best_move);
 }
+
+// 7 ra
+// 4 rb
+//
+// 4 rr
+// 3 ra
 
 void	move_apply(t_move *move, t_stacks *stacks)
 {
@@ -677,18 +679,17 @@ void	move_apply(t_move *move, t_stacks *stacks)
 
 void	optimal_sort(int num_of_chunks, t_stacks *stacks)
 {
-	t_move	*best_move;
+	t_move	best_move;
 
 	//TODO: handle null error from copy_as_sorted
 	divide_in_chunks(num_of_chunks, stacks);
 	simple_sort(stacks->stack_a->length, stacks);
 
-	// find best move
 	// TODO: handle error
 	while (stacks->stack_b->length)
 	{
 		best_move = move_find_best(stacks);
-		move_apply(best_move, stacks);
+		move_apply(&best_move, stacks);
 		pa(stacks);
 	}
 	stack_a_rotate_to_top(list_find_smallest(stacks->stack_a), stacks);
@@ -696,6 +697,7 @@ void	optimal_sort(int num_of_chunks, t_stacks *stacks)
 
 void	push_swap(t_stacks *stacks)
 {
+	//TODO: handle cases where length is 2 and 1
 	if (stacks->stack_a->length == 3)
 		return (_sort_3(stacks));
 	else if (stacks->stack_a->length <= 10)
@@ -706,20 +708,92 @@ void	push_swap(t_stacks *stacks)
 		return (optimal_sort(4, stacks));
 }
 
+void	handle_error()
+{
+	ft_putstr_fd("Error\n", STDERR_FILENO);
+	exit(1);
+}
+
+int	is_numeric(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	if (str[i] == '\0')
+		return (0);
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+char	**parse(int argc, char **argv)
+{
+	char **values;
+
+	if (argc < 2)
+		exit (1);
+	// if (argc == 2)
+	// {
+		// arr_is_numeric();
+		// arr_has_no_duplicates();
+		// arr_has_no_longs();
+		//
+		// convert string to the list of numbers
+		// check if there is no empty strings
+		// check if every number is int and not long
+		// check if there is no duplicates
+		// check if there are non-numbers
+	char *arg = argv[1];
+	values = ft_split(arg, ' ');
+	int i = 0;
+	while (values[i])
+	{
+		if (!is_numeric(values[i]) || (ft_atoi(values[i]) != ft_atol(values[i])))
+			handle_error();
+		i++;
+	}
+
+	// }
+	// else
+	// {
+		// arr_is_numeric();
+		// arr_has_no_duplicates();
+		// arr_has_no_longs();
+		//
+		// convert list of strings to the list of numbers
+		// check if there is no empty strings
+		// check if there are non-numbers
+		// check if there is no duplicates
+		// check if every number is int and not long
+	// }
+	return (values);
+}
+
+// If no parameters are specified, the program must not display anything and give the
+// prompt back.
+
 //TODO: refactor swapping functions into their own files
-//TODO: store more information on structs (len, smallest, biggest etc)
 //TODO: add error checking
 //TODO: add handling of both multiple arguments and a single string
+//TODO: add parsing for the input
 int	main(int argc, char **argv)
 {
 	t_stacks	stacks;
+
+	parse(argc, argv);
 
 	if (argc == 2)
 	{
 		
 	}
 	if (argc < 2)
-		return (0);
+		return (1);
 	stacks.stack_a = list_init(argc - 1, &argv[1]);
 	if (!stacks.stack_a)
 		return (1);
@@ -730,11 +804,4 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	push_swap(&stacks);
-	// t_node *curr_a = stacks.stack_a->head;
-	// while (curr_a) {
-	// 	printf("%d\n", curr_a->value);
-	// 	curr_a = curr_a->next;
-	// 	if (curr_a == stacks.stack_a->head)
-	// 		break;
-	// }
 }
