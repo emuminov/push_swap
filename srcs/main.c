@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/18 20:34:04 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/19 13:30:14 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -437,7 +437,7 @@ void	_sort_3(t_stacks *stacks)
 
 // note: sweet spot for usage in optimal sort is n == 6
 // TODO: handle error if smallest is NULL
-void	_simple_sort(int n, t_stacks *stacks)
+void	simple_sort(int n, t_stacks *stacks)
 {
 	t_node	*smallest;
 
@@ -559,140 +559,152 @@ int	move_total(t_move *move)
 	return (move->total);
 }
 
-void	_optimal_sort(int num_of_chunks, t_stacks *stacks)
+// TODO: solve potential NULL error
+/* Divides stack_a into n chunks and pushes them to stack_b,
+ * leaving only 6 values in stack_a.
+ * n / 2 - i     = lower chunk index
+ * n / 2 + i + 1 = upper chunk index */
+void	divide_in_chunks(int n, t_stacks *stacks)
 {
 	int		i;
-	int		lower_chunk;
-	int		upper_chunk;
 	int		l;
 	int		*sorted;
 	t_node	*smallest;
-	// t_node	*biggest;
 
 	//TODO: handle null error from copy_as_sorted
 	sorted = copy_as_sorted(stacks->stack_a);
 	i = 0;
 	l = stacks->stack_a->length;
-	while (i < (num_of_chunks / 2) && stacks->stack_a->length > 6)
+	while (i < (n / 2) && stacks->stack_a->length > 6)
 	{
-		lower_chunk = (num_of_chunks / 2) - i;
-		upper_chunk = (num_of_chunks / 2) + i + 1;
-		smallest = list_find_value_in_range(chunk_get_lower(lower_chunk, num_of_chunks, l, sorted), chunk_get_upper(upper_chunk, num_of_chunks, l, sorted), stacks->stack_a);
+		smallest = list_find_value_in_range(chunk_get_lower(n / 2 - i, n, l, sorted), chunk_get_upper(n / 2 + i + 1, n, l, sorted), stacks->stack_a);
 		if (smallest)
 		{
 			stack_a_rotate_to_top(smallest, stacks);
 			pb(stacks);
-			if (stacks->stack_b->head->value < chunk_get_lower(upper_chunk, num_of_chunks, l, sorted))
+			if (stacks->stack_b->head->value < chunk_get_lower(n / 2 + i + 1, n, l, sorted))
 				rb(stacks);
 		}
 		else
 			i++;
 	}
-	_simple_sort(stacks->stack_a->length, stacks);
+}
+
+t_move	*move_init(t_move *move)
+{
+	move->ra = 0;
+	move->rb = 0;
+	move->rra = 0;
+	move->rrb = 0;
+	move->total = INT_MAX;
+	return (move);
+}
+
+t_move	*move_copy(t_move *dest, t_move *src)
+{
+	dest->ra = src->ra;
+	dest->rb = src->rb;
+	dest->rra = src->rra;
+	dest->rrb = src->rrb;
+	dest->total = src->total;
+	return (dest);
+}
+
+void	move_calculate(t_node *node, t_stacks *stacks, t_move *move)
+{
+	t_node *target = list_find_target(node, stacks->stack_a);
+	int target_pos = list_find_position(target, stacks->stack_a);
+	int curr_pos = list_find_position(node, stacks->stack_b);
+	if (target_pos <= (stacks->stack_a->length / 2))
+		move->ra = target_pos;
+	else
+		move->rra = stacks->stack_a->length - target_pos;
+	if (curr_pos <= (stacks->stack_b->length / 2))
+		move->rb = curr_pos;
+	else
+		move->rrb = stacks->stack_b->length - curr_pos;
+	move_total(move);
+}
+
+t_move	*move_find_best(t_stacks *stacks)
+{
+	t_move	*best_move;
+	t_move	*curr_move;
+
+	// TODO: handle error
+	best_move = malloc(sizeof(t_move));
+	curr_move = malloc(sizeof(t_move));
+	move_init(best_move);
+	t_node *curr = stacks->stack_b->head;
+	while(curr)
+	{
+		// find target node for current node
+		move_init(curr_move);
+		move_calculate(curr, stacks, curr_move);
+		if (best_move->total > curr_move->total)
+			move_copy(best_move, curr_move);
+		curr = curr->next;
+		if (curr == stacks->stack_b->head || best_move->total < 2)
+			break ;
+	}
+	free(curr_move);
+	return (best_move);
+}
+
+void	move_apply(t_move *move, t_stacks *stacks)
+{
+	while (move->ra && move->rb)
+	{
+		move->ra--;
+		move->rb--;
+		rr(stacks);
+	}
+	while (move->rra && move->rrb)
+	{
+		move->rra--;
+		move->rrb--;
+		rrr(stacks);
+	}
+	while (move->ra--)
+		ra(stacks);
+	while (move->rb--)
+		rb(stacks);
+	while (move->rra--)
+		rra(stacks);
+	while (move->rrb--)
+		rrb(stacks);
+}
+
+void	optimal_sort(int num_of_chunks, t_stacks *stacks)
+{
+	t_move	*best_move;
+
+	//TODO: handle null error from copy_as_sorted
+	divide_in_chunks(num_of_chunks, stacks);
+	simple_sort(stacks->stack_a->length, stacks);
 
 	// find best move
+	// TODO: handle error
 	while (stacks->stack_b->length)
 	{
-		t_move best_move = {0, 0, 0, 0, -1};
-		t_move curr_move = {0, 0, 0, 0, 0};
-		t_node *curr = stacks->stack_b->head;
-		while(curr)
-		{
-			// find target node for current node
-			curr_move.ra = 0;
-			curr_move.rra = 0;
-			curr_move.rb = 0;
-			curr_move.rra = 0;
-			curr_move.total = 0;
-			t_node *target = list_find_target(curr, stacks->stack_a);
-			int target_pos = list_find_position(target, stacks->stack_a);
-			int curr_pos = list_find_position(curr, stacks->stack_b);
-			if (curr_pos <= (stacks->stack_b->length / 2))
-				curr_move.rb = curr_pos;
-			else
-				curr_move.rrb = stacks->stack_b->length - curr_pos;
-			if (target_pos <= (stacks->stack_a->length / 2))
-				curr_move.ra = target_pos;
-			else
-				curr_move.rra = stacks->stack_a->length - target_pos;
-			if (best_move.total == -1 || move_total(&best_move) > move_total(&curr_move))
-				best_move = curr_move;
-			curr = curr->next;
-			if (curr == stacks->stack_b->head)
-				break ;
-		}
-
-		// apply best move
-		while (best_move.ra && best_move.rb)
-		{
-			best_move.ra--;
-			best_move.rb--;
-			rr(stacks);
-		}
-		while (best_move.rra && best_move.rrb)
-		{
-			best_move.rra--;
-			best_move.rrb--;
-			rrr(stacks);
-		}
-		while (best_move.ra--)
-			ra(stacks);
-		while (best_move.rb--)
-			rb(stacks);
-		while (best_move.rra--)
-			rra(stacks);
-		while (best_move.rrb--)
-			rrb(stacks);
+		best_move = move_find_best(stacks);
+		move_apply(best_move, stacks);
 		pa(stacks);
 	}
-
-	// adjust the stack
-	smallest = list_find_smallest(stacks->stack_a);
-	stack_a_rotate_to_top(smallest, stacks);
+	stack_a_rotate_to_top(list_find_smallest(stacks->stack_a), stacks);
 }
-//
-// t_move	calculate_move(t_node *node, t_stacks *stacks)
-// {
-// 	
-// }
-
-// 0 1 2 3 4 5 6 7 8 9 10 11 12 || 13 / 4 = 3
-// 9 1 3 8 2 0 4 5 6 7 11 10 12
-// 1 3 8 2 0 4 5 6 7 11 10 12 9 | ra
-// 3 8 2 0 4 5 6 7 11 10 12 9   | pb  1
-// 8 2 0 4 5 6 7 11 10 12 9     | pb  3 1
-// 2 0 4 5 6 7 11 10 12 9 8     | ra  3 1
-// 0 4 5 6 7 11 10 12 9 8       | pb  2 3 1
-// 5 6 7 11 10 12 9 8           | pb  4 0 2 3 1
-// 6 7 11 10 12 9 8             | pb  5 4 0 2 3 1
-// 7 11 10 12 9 8               | pb  6 5 4 0 2 3 1
-// 11 10 12 9 8                 | pb  7 6 5 4 0 2 3 1
-// 8 11 10 12 9                 | rra 7 6 5 4 0 2 3 1
-// 11 10 12 9                   | pb  8 7 6 5 4 0 2 3 1
-// 9 11 10 12                   | rra 8 7 6 5 4 0 2 3 1
-// 11 10 12                     | pb  9 8 7 6 5 4 0 2 3 1
-// 10 12                        | pb 10 9 8 7 6 5 4 0 2 3 1
-// 12                           | pb 11 10 9 8 7 6 5 4 0 2 3 1
-//                              | pb 12 11 10 9 8 7 6 5 4 0 2 3 1
 
 void	push_swap(t_stacks *stacks)
 {
 	if (stacks->stack_a->length == 3)
 		return (_sort_3(stacks));
 	else if (stacks->stack_a->length <= 10)
-		return (_simple_sort(stacks->stack_a->length, stacks));
+		return (simple_sort(stacks->stack_a->length, stacks));
 	else if (stacks->stack_a->length <= 200)
-		// 8 or 10 works best for 100
-		// 16 or 20 works best for 500
-		return (_optimal_sort(2, stacks));
+		return (optimal_sort(2, stacks));
 	else
-		return (_optimal_sort(4, stacks));
+		return (optimal_sort(4, stacks));
 }
-
-// [115-150]
-// 147
-// 138 147
-//
 
 //TODO: refactor swapping functions into their own files
 //TODO: store more information on structs (len, smallest, biggest etc)
