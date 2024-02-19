@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/19 15:21:55 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/19 18:20:05 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -635,7 +635,6 @@ t_move	move_find_best(t_stacks *stacks)
 	t_node *curr = stacks->stack_b->head;
 	while(curr)
 	{
-		// find target node for current node
 		move_init(&curr_move);
 		move_calculate(curr, stacks, &curr_move);
 		if (best_move.total > curr_move.total)
@@ -646,12 +645,6 @@ t_move	move_find_best(t_stacks *stacks)
 	}
 	return (best_move);
 }
-
-// 7 ra
-// 4 rb
-//
-// 4 rr
-// 3 ra
 
 void	move_apply(t_move *move, t_stacks *stacks)
 {
@@ -732,47 +725,62 @@ int	is_numeric(char *str)
 	return (1);
 }
 
-char	**parse(int argc, char **argv)
+void	ft_free_split(char **strs)
 {
-	char **values;
+	size_t	i;
+
+	i = 0;
+	while (strs[i])
+	{
+		free(strs[i]);
+		i++;
+	}
+	free(strs);
+}
+
+t_list	*parse(int argc, char **argv)
+{
+	char 	**values;
+	t_list	*result;
 
 	if (argc < 2)
 		exit (1);
-	// if (argc == 2)
-	// {
-		// arr_is_numeric();
-		// arr_has_no_duplicates();
-		// arr_has_no_longs();
-		//
-		// convert string to the list of numbers
-		// check if there is no empty strings
-		// check if every number is int and not long
-		// check if there is no duplicates
-		// check if there are non-numbers
-	char *arg = argv[1];
-	values = ft_split(arg, ' ');
+	if (argc == 2)
+		values = ft_split(argv[1], ' ');
+	else
+		values = &argv[1];
+	if (values[0] == NULL)
+		handle_error();
 	int i = 0;
 	while (values[i])
 	{
 		if (!is_numeric(values[i]) || (ft_atoi(values[i]) != ft_atol(values[i])))
 			handle_error();
+		int j = i + 1;
+		while (values[j])
+		{
+			if (atoi(values[i]) == atoi(values[j]))
+				handle_error();
+			j++;
+		}
 		i++;
 	}
-
-	// }
-	// else
-	// {
-		// arr_is_numeric();
-		// arr_has_no_duplicates();
-		// arr_has_no_longs();
+	result = list_init(i, values);
+	// re-check case with handling case with 1 number
+	if (argc == 2)
+		ft_free_split(values);
+	// FREE SPLIT AS WELL
+	// check -0 and 0 cases as well (duplicates)
+		// [x] arr_is_numeric();
+		// [x] arr_has_no_duplicates();
+		// [x] arr_has_no_longs();
 		//
 		// convert list of strings to the list of numbers
 		// check if there is no empty strings
 		// check if there are non-numbers
 		// check if there is no duplicates
 		// check if every number is int and not long
-	// }
-	return (values);
+	return (result);
 }
 
 // If no parameters are specified, the program must not display anything and give the
