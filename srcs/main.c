@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/20 12:25:06 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/20 16:12:49 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ void	list_free(t_list *lst)
 	if (!lst)
 		return ;
 	curr = lst->head;
-	next = lst->head->next;
 	while (curr)
 	{
 		next = curr->next;
@@ -342,6 +341,135 @@ int		list_find_position(t_node *node, t_list *lst)
 	return (-1);
 }
 
+int	is_numeric(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	if (str[i] == '\0')
+		return (0);
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	ft_free_split(char **strs)
+{
+	size_t	i;
+
+	i = 0;
+	while (strs[i])
+	{
+		free(strs[i]);
+		i++;
+	}
+	free(strs);
+}
+
+void	handle_error(t_list *stack_a, t_list *stack_b, char **arr, int silent)
+{
+	if (stack_a)
+		list_free(stack_a);
+	if (stack_b)
+		list_free(stack_b);
+	if (arr)
+		ft_free_split(arr);
+	if (!silent)
+		ft_putstr_fd("Error\n", STDERR_FILENO);
+	exit(EXIT_FAILURE);
+}
+
+void	check_errors(char **values)
+{
+	int	i;
+	int	j;
+
+	if (values[0] == NULL)
+		handle_error(NULL, NULL, values, 0);
+	i = 0;
+	while (values[i])
+	{
+		if (!is_numeric(values[i]) || (ft_atoi(values[i]) != ft_atol(values[i])))
+			handle_error(NULL, NULL, values, 0);
+		j = i + 1;
+		while (values[j])
+		{
+			if (atoi(values[i]) == atoi(values[j]))
+				handle_error(NULL, NULL, values, 0);
+			j++;
+		}
+		i++;
+	}
+}
+
+/* Duplicates NULL-terminate array of strings */
+char	**arr_duplicate(char **arr)
+{
+	int		i;
+	char	**result;
+
+	i = 0;
+	while (arr[i])
+		i++;
+	result = malloc(sizeof(char *) * (i + 1));
+	if (!result)
+		return (NULL);
+	i = 0;
+	while (arr[i])
+	{
+		result[i] = ft_strdup(arr[i]);
+		if (!result[i])
+		{
+			ft_free_split(result);
+			return (NULL);
+		}
+		i++;
+	}
+	result[i] = NULL;
+	return (result);
+}
+
+t_list	*parse(int argc, char **argv)
+{
+	char 	**values;
+	t_list	*result;
+	int		i;
+
+	if (argc == 2 && !is_numeric(argv[1]))
+		values = ft_split(argv[1], ' ');
+	else
+		values = arr_duplicate(&argv[1]);
+	if (values == NULL)
+		handle_error(NULL, NULL, values, 1);
+	check_errors(values);
+	i = 0;
+	while (values[i])
+		i++;
+	result = list_init(i, values);
+	ft_free_split(values);
+	if (!result)
+		handle_error(NULL, NULL, NULL, 1);
+	return (result);
+	// re-check case with handling case with 1 number
+	// FREE SPLIT AS WELL
+	// check -0 and 0 cases as well (duplicates)
+		// [x] arr_is_numeric();
+		// [x] arr_has_no_duplicates();
+		// [x] arr_has_no_longs();
+		//
+		// convert list of strings to the list of numbers
+		// check if there is no empty strings
+		// check if there are non-numbers
+		// check if there is no duplicates
+		// check if every number is int and not long
+}
+
 void	bubble_sort(int nums_len, int *arr)
 {
 	int	i;
@@ -372,6 +500,8 @@ int	*copy_as_sorted(t_list *src)
 	t_node	*curr;
 	int		*res;
 
+	if (!src)
+		return (NULL);
 	res = malloc(sizeof(int) * src->length);
 	if (!res)
 		return (NULL);
@@ -513,12 +643,12 @@ t_node	*list_find_value_in_range(int lower, int upper, t_list *lst)
 // 40-59  | (100 / 5) * 2 | (100 / 5) * 3 - 1
 // 60-79  | (100 / 5) * 3 | (100 / 5) * 4 - 1
 // 80-99  | (100 / 5) * 4 | (100 / 5) * 5 - 1
-int	chunk_get_lower(int chunk_index, int num_of_chunks, int arr_length, int *arr)
+int	list_chunk_get_lower(int chunk_index, int num_of_chunks, int arr_length, int *arr)
 {
 	return (arr[(arr_length / num_of_chunks) * (chunk_index - 1)]);
 }
 
-int	chunk_get_upper(int chunk_index, int num_of_chunks, int arr_length, int *arr)
+int	list_chunk_get_upper(int chunk_index, int num_of_chunks, int arr_length, int *arr)
 {
 	if (chunk_index == num_of_chunks)
 		return (arr[arr_length - 1]);
@@ -566,36 +696,29 @@ int	move_total(t_move *move)
 	return (move->total);
 }
 
-// TODO: solve potential NULL error
-/* Divides stack_a into n chunks and pushes them to stack_b,
- * leaving only 6 values in stack_a.
- * n / 2 - i     = lower chunk index
- * n / 2 + i + 1 = upper chunk index */
-void	divide_in_chunks(int n, t_stacks *stacks)
-{
-	int		i;
-	int		l;
-	int		*sorted;
-	t_node	*smallest;
+// void	rotate_chunk_value_to_top(int n, t_stacks *stacks)
+// {
+//
+// }
 
-	//TODO: handle null error from copy_as_sorted
-	sorted = copy_as_sorted(stacks->stack_a);
-	i = 0;
-	l = stacks->stack_a->length;
-	while (i < (n / 2) && stacks->stack_a->length > 6)
-	{
-		smallest = list_find_value_in_range(chunk_get_lower(n / 2 - i, n, l, sorted), chunk_get_upper(n / 2 + i + 1, n, l, sorted), stacks->stack_a);
-		if (smallest)
-		{
-			stack_a_rotate_to_top(smallest, stacks);
-			pb(stacks);
-			if (stacks->stack_b->head->value < chunk_get_lower(n / 2 + i + 1, n, l, sorted))
-				rb(stacks);
-		}
-		else
-			i++;
-	}
+int	list_rotate_chunk_value_to_top(int n, int i, int l, int *sorted, t_stacks *stacks)
+{
+	t_node	*node;
+	int		upper;
+	int		lower;
+
+	lower = list_chunk_get_lower(n / 2 - i, n, l, sorted);
+	upper = list_chunk_get_upper(n / 2 + i + 1, n, l, sorted);
+	node = list_find_value_in_range(lower, upper, stacks->stack_a);
+	if (!node)
+		return (0);
+	stack_a_rotate_to_top(node, stacks);
+	pb(stacks);
+	if (stacks->stack_b->head->value < list_chunk_get_lower(n / 2 + i + 1, n, l, sorted))
+		rb(stacks);
+	return (1);
 }
+
 
 t_move	*move_init(t_move *move)
 {
@@ -677,6 +800,30 @@ void	move_apply(t_move *move, t_stacks *stacks)
 		rrb(stacks);
 }
 
+// TODO: solve potential NULL error
+/* Divides stack_a into n chunks and pushes them to stack_b,
+ * leaving only 6 values in stack_a.
+ * n / 2 - i     = lower chunk index
+ * n / 2 + i + 1 = upper chunk index */
+void	divide_in_chunks(int n, t_stacks *stacks)
+{
+	int		i;
+	int		*sorted;
+	int		l;
+
+	sorted = copy_as_sorted(stacks->stack_a);
+	if (!sorted)
+		handle_error(stacks->stack_a, stacks->stack_b, NULL, 1);
+	i = 0;
+	l = stacks->stack_a->length;
+	while (i < (n / 2) && stacks->stack_a->length > 6)
+	{
+		if (!list_rotate_chunk_value_to_top(n, i, l, sorted, stacks))
+			i++;
+	}
+	free(sorted);
+}
+
 void	optimal_sort(int num_of_chunks, t_stacks *stacks)
 {
 	t_move	best_move;
@@ -697,7 +844,7 @@ void	optimal_sort(int num_of_chunks, t_stacks *stacks)
 
 void	push_swap(t_stacks *stacks)
 {
-	if (stacks->stack_a->length == 1)
+	if (stacks->stack_a->length == 1 || list_is_sorted(stacks->stack_a))
 		return ;
 	else if (stacks->stack_a->length == 2)
 		return (_sort_2(stacks));
@@ -709,127 +856,6 @@ void	push_swap(t_stacks *stacks)
 		return (optimal_sort(2, stacks));
 	else
 		return (optimal_sort(4, stacks));
-}
-
-int	is_numeric(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (str[i] == '-' || str[i] == '+')
-		i++;
-	if (str[i] == '\0')
-		return (0);
-	while (str[i])
-	{
-		if (!ft_isdigit(str[i]))
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-void	ft_free_split(char **strs)
-{
-	size_t	i;
-
-	i = 0;
-	while (strs[i])
-	{
-		free(strs[i]);
-		i++;
-	}
-	free(strs);
-}
-
-void	handle_error()
-{
-	ft_putstr_fd("Error\n", STDERR_FILENO);
-	exit(EXIT_FAILURE);
-}
-
-void	check_errors(char **values)
-{
-	int	i;
-	int	j;
-
-	if (values[0] == NULL)
-		handle_error();
-	i = 0;
-	while (values[i])
-	{
-		if (!is_numeric(values[i]) || (ft_atoi(values[i]) != ft_atol(values[i])))
-			handle_error();
-		j = i + 1;
-		while (values[j])
-		{
-			if (atoi(values[i]) == atoi(values[j]))
-				handle_error();
-			j++;
-		}
-		i++;
-	}
-}
-
-/* Duplicates NULL-terminate array of strings */
-char	**arr_duplicate(char **arr)
-{
-	int		i;
-	char	**result;
-
-	i = 0;
-	while (arr[i])
-		i++;
-	result = malloc(sizeof(char *) * (i + 1));
-	if (!result)
-		return (NULL);
-	i = 0;
-	while (arr[i])
-	{
-		result[i] = ft_strdup(arr[i]);
-		if (!result[i])
-		{
-			ft_free_split(result);
-			return (NULL);
-		}
-		i++;
-	}
-	result[i] = NULL;
-	return (result);
-}
-
-t_list	*parse(int argc, char **argv)
-{
-	char 	**values;
-	t_list	*result;
-	int		i;
-
-	if (argc == 2 && !is_numeric(argv[1]))
-		values = ft_split(argv[1], ' ');
-	else
-		values = arr_duplicate(&argv[1]);
-	if (values == NULL)
-		return (NULL);
-	check_errors(values);
-	i = 0;
-	while (values[i])
-		i++;
-	result = list_init(i, values);
-	ft_free_split(values);
-	// IF NOT RESULT HANDLE ERROR
-	return (result);
-	// re-check case with handling case with 1 number
-	// FREE SPLIT AS WELL
-	// check -0 and 0 cases as well (duplicates)
-		// [x] arr_is_numeric();
-		// [x] arr_has_no_duplicates();
-		// [x] arr_has_no_longs();
-		//
-		// convert list of strings to the list of numbers
-		// check if there is no empty strings
-		// check if there are non-numbers
-		// check if there is no duplicates
-		// check if every number is int and not long
 }
 
 // If no parameters are specified, the program must not display anything and give the
@@ -844,16 +870,12 @@ int	main(int argc, char **argv)
 	t_stacks	stacks;
 
 	if (argc == 1)
-		return (0);
-	// parse should return stack_a list
+		return (EXIT_SUCCESS);
 	stacks.stack_a = parse(argc, argv);
-	if (!stacks.stack_a)
-		return (1);
 	stacks.stack_b = list_init(0, NULL);
 	if (!stacks.stack_b)
-	{
-		list_free(stacks.stack_a);
-		return (1);
-	}
+		handle_error(stacks.stack_a, NULL, NULL, 1);
 	push_swap(&stacks);
+	list_free(stacks.stack_a);
+	list_free(stacks.stack_b);
 }
