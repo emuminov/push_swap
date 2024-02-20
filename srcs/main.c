@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/20 16:25:57 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/20 17:36:52 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -576,7 +576,7 @@ void	simple_sort(int n, t_stacks *stacks)
 }
 
 // TODO: handle all possible errors
-t_node	*list_find_value_in_range(int lower, int upper, t_list *lst)
+t_node	*list_find_value(int lower, int upper, t_list *lst)
 {
 	int		top_cost;
 	int		bottom_cost;
@@ -626,12 +626,12 @@ t_node	*list_find_value_in_range(int lower, int upper, t_list *lst)
 // 40-59  | (100 / 5) * 2 | (100 / 5) * 3 - 1
 // 60-79  | (100 / 5) * 3 | (100 / 5) * 4 - 1
 // 80-99  | (100 / 5) * 4 | (100 / 5) * 5 - 1
-int	list_chunk_get_lower(int index, int n, int l, int *arr)
+int	list_cl(int index, int n, int l, int *arr)
 {
 	return (arr[(l / n) * (index - 1)]);
 }
 
-int	list_chunk_get_upper(int index, int n, int l, int *arr)
+int	list_cu(int index, int n, int l, int *arr)
 {
 	if (index == n)
 		return (arr[l - 1]);
@@ -677,25 +677,6 @@ int	move_total(t_move *move)
 		total_rrx = move->rrb;
 	move->total = total_rx + total_rrx;
 	return (move->total);
-}
-
-int	list_rotate_chunk_value(int n, int i, int l, int *sorted, t_stacks *stacks)
-{
-	t_node	*node;
-	int		upper;
-	int		lower;
-
-	lower = list_chunk_get_lower(n / 2 - i, n, l, sorted);
-	upper = list_chunk_get_upper(n / 2 + i + 1, n, l, sorted);
-	node = list_find_value_in_range(lower, upper, stacks->stack_a);
-	if (!node)
-		return (0);
-	stack_a_rotate_to_top(node, stacks);
-	pb(stacks);
-	if (stacks->stack_b->head->value
-		< list_chunk_get_lower(n / 2 + i + 1, n, l, sorted))
-		rb(stacks);
-	return (1);
 }
 
 t_move	*move_init(t_move *move)
@@ -789,9 +770,10 @@ void	move_apply(t_move *move, t_stacks *stacks)
  * n / 2 + i + 1 = upper chunk index */
 void	divide_in_chunks(int n, t_stacks *stacks)
 {
-	int		i;
 	int		*sorted;
+	int		i;
 	int		l;
+	t_node	*node;
 
 	sorted = copy_as_sorted(stacks->stack_a);
 	if (!sorted)
@@ -800,8 +782,17 @@ void	divide_in_chunks(int n, t_stacks *stacks)
 	l = stacks->stack_a->length;
 	while (i < (n / 2) && stacks->stack_a->length > 6)
 	{
-		if (!list_rotate_chunk_value(n, i, l, sorted, stacks))
+		node = list_find_value(list_cl(n / 2 - i, n, l, sorted),
+				list_cu(n / 2 + i + 1, n, l, sorted), stacks->stack_a);
+		if (!node)
+		{
 			i++;
+			continue ;
+		}
+		stack_a_rotate_to_top(node, stacks);
+		pb(stacks);
+		if (stacks->stack_b->head->value < list_cl(n / 2 + i + 1, n, l, sorted))
+			rb(stacks);
 	}
 	free(sorted);
 }
