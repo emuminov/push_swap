@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/20 09:18:51 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/20 10:05:21 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ t_list	*list_append(int num, t_list *lst)
 	return (lst);
 }
 
-t_list	*list_init(int nums_len, char **nums)
+t_list	*list_init(int nums_len, char **values)
 {
 	t_list	*lst;
 
@@ -99,11 +99,11 @@ t_list	*list_init(int nums_len, char **nums)
 	lst->head = NULL;
 	lst->tail = NULL;
 	lst->length = 0;
-	if (nums_len == 0 || !nums)
+	if (nums_len == 0 || !values)
 		return (lst);
 	while (lst->length < nums_len)
 	{
-		if (!list_append(ft_atoi(nums[lst->length++]), lst))
+		if (!list_append(ft_atoi(values[lst->length++]), lst))
 		{
 			list_free(lst);
 			return (NULL);
@@ -701,12 +701,6 @@ void	push_swap(t_stacks *stacks)
 		return (optimal_sort(4, stacks));
 }
 
-void	handle_error()
-{
-	ft_putstr_fd("Error\n", STDERR_FILENO);
-	exit(1);
-}
-
 int	is_numeric(char *str)
 {
 	int	i;
@@ -738,37 +732,41 @@ void	ft_free_split(char **strs)
 	free(strs);
 }
 
-t_list	*parse(int argc, char **argv)
+void	handle_error()
 {
-	char 	**values;
-	t_list	*result;
+	ft_putstr_fd("Error\n", STDERR_FILENO);
+	exit(EXIT_FAILURE);
+}
 
-	if (argc < 2)
-		exit (1);
-	if (argc == 2)
-		values = ft_split(argv[1], ' ');
+char	**parse(int *should_free, int argc, char **argv)
+{
+	char 	**result;
+
+	if (argc == 2 && !is_numeric(argv[1]))
+	{
+		result = ft_split(argv[1], ' ');
+		*should_free = 1;
+	}
 	else
-		values = &argv[1];
-	if (values[0] == NULL)
+		result = &argv[1];
+	if (result[0] == NULL)
 		handle_error();
 	int i = 0;
-	while (values[i])
+	while (result[i])
 	{
-		if (!is_numeric(values[i]) || (ft_atoi(values[i]) != ft_atol(values[i])))
+		if (!is_numeric(result[i]) || (ft_atoi(result[i]) != ft_atol(result[i])))
 			handle_error();
 		int j = i + 1;
-		while (values[j])
+		while (result[j])
 		{
-			if (atoi(values[i]) == atoi(values[j]))
+			if (atoi(result[i]) == atoi(result[j]))
 				handle_error();
 			j++;
 		}
 		i++;
 	}
-	result = list_init(i, values);
+	return (result);
 	// re-check case with handling case with 1 number
-	if (argc == 2)
-		ft_free_split(values);
 	// FREE SPLIT AS WELL
 	// check -0 and 0 cases as well (duplicates)
 		// [x] arr_is_numeric();
@@ -780,7 +778,6 @@ t_list	*parse(int argc, char **argv)
 		// check if there are non-numbers
 		// check if there is no duplicates
 		// check if every number is int and not long
-	return (result);
 }
 
 // If no parameters are specified, the program must not display anything and give the
@@ -792,17 +789,16 @@ t_list	*parse(int argc, char **argv)
 //TODO: add parsing for the input
 int	main(int argc, char **argv)
 {
+	int			should_free;
+	char		**values;
 	t_stacks	stacks;
 
-	parse(argc, argv);
-
-	if (argc == 2)
-	{
-		
-	}
-	if (argc < 2)
-		return (1);
-	stacks.stack_a = list_init(argc - 1, &argv[1]);
+	if (argc == 1)
+		return (0);
+	should_free = 0;
+	// parse should return stack_a list
+	values = parse(&should_free, argc, argv);
+	stacks.stack_a = list_init(argc - 1, values);
 	if (!stacks.stack_a)
 		return (1);
 	stacks.stack_b = list_init(0, NULL);
@@ -812,4 +808,6 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	push_swap(&stacks);
+	if (should_free)
+		ft_free_split(values);
 }
