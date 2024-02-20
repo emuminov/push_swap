@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/20 17:36:52 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/20 18:16:48 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -575,50 +575,69 @@ void	simple_sort(int n, t_stacks *stacks)
 	}
 }
 
+t_node	*list_find_value_from_top(int lower, int upper, t_list *lst)
+{
+	t_node	*curr;
+	t_node	*found;
+
+	curr = lst->head;
+	found = NULL;
+	while (curr)
+	{
+		if (curr->value >= lower && curr->value <= upper)
+		{
+			found = curr;
+			break ;
+		}
+		curr = curr->next;
+		if (curr == lst->head)
+			break ;
+	}
+	return (found);
+}
+
+t_node	*list_find_value_from_bottom(int lower, int upper, t_list *lst)
+{
+	t_node	*curr;
+	t_node	*found;
+
+	curr = lst->tail;
+	found = NULL;
+	while (curr)
+	{
+		if (curr->value >= lower && curr->value <= upper)
+		{
+			found = curr;
+			break ;
+		}
+		curr = curr->prev;
+		if (curr == lst->tail)
+			break ;
+	}
+	return (found);
+}
+
 // TODO: handle all possible errors
 t_node	*list_find_value(int lower, int upper, t_list *lst)
 {
 	int		top_cost;
-	int		bottom_cost;
+	int		bot_cost;
 	t_node	*top;
-	t_node	*bottom;
+	t_node	*bot;
 	t_node	*curr;
 
 	curr = lst->head;
 	if (!curr || curr == lst->tail)
 		return (curr);
-	top_cost = 0;
-	bottom_cost = 1;
-	top = NULL;
-	bottom = NULL;
-	while (curr)
-	{
-		if (curr->value >= lower && curr->value <= upper)
-		{
-			top = curr;
-			break ;
-		}
-		curr = curr->next;
-		top_cost++;
-		if (curr == lst->head)
-			break ;
-	}
-	curr = lst->tail;
-	while (curr)
-	{
-		if (curr->value >= lower && curr->value <= upper)
-		{
-			bottom = curr;
-			break ;
-		}
-		curr = curr->prev;
-		bottom_cost++;
-		if (curr == lst->tail)
-			break ;
-	}
-	if (top_cost <= bottom_cost)
+	top = list_find_value_from_top(lower, upper, lst);
+	bot = list_find_value_from_bottom(lower, upper, lst);
+	if (!top || !bot)
+		return (NULL);
+	top_cost = list_find_position(top, lst);
+	bot_cost = lst->length - list_find_position(bot, lst);
+	if (top_cost <= bot_cost)
 		return (top);
-	return (bottom);
+	return (bot);
 }
 
 // 0-19   | (100 / 5) * 0 | (100 / 5) * 1 - 1
