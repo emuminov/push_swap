@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/20 12:10:17 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/20 12:25:06 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -416,6 +416,13 @@ void	stack_b_rotate_to_top(t_node *node, t_stacks *stacks)
 	while (pos--)
 		rrb(stacks);
 }
+
+void	_sort_2(t_stacks *stacks)
+{
+	if (stacks->stack_a->head->value > stacks->stack_a->tail->value)
+		sa(stacks);
+}
+
 void	_sort_3(t_stacks *stacks)
 {
 	t_node	*smallest;
@@ -690,8 +697,11 @@ void	optimal_sort(int num_of_chunks, t_stacks *stacks)
 
 void	push_swap(t_stacks *stacks)
 {
-	//TODO: handle cases where length is 2 and 1
-	if (stacks->stack_a->length == 3)
+	if (stacks->stack_a->length == 1)
+		return ;
+	else if (stacks->stack_a->length == 2)
+		return (_sort_2(stacks));
+	else if (stacks->stack_a->length == 3)
 		return (_sort_3(stacks));
 	else if (stacks->stack_a->length <= 10)
 		return (simple_sort(stacks->stack_a->length, stacks));
