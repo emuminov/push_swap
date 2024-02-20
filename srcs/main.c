@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/19 18:20:05 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/20 09:18:51 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -407,14 +407,14 @@ void	stack_b_rotate_to_top(t_node *node, t_stacks *stacks)
 	int	pos;
 
 	pos = list_find_position(node, stacks->stack_b);
-	while (pos > 0)
 	{
-		if ((stacks->stack_b->length / 2) >= pos)
+		while (pos--)
 			rb(stacks);
-		else if ((stacks->stack_b->length / 2) < pos)
-			rrb(stacks);
-		pos = list_find_position(node, stacks->stack_b);
+		return ;
 	}
+	pos = stacks->stack_b->length - pos;
+	while (pos--)
+		rrb(stacks);
 }
 void	_sort_3(t_stacks *stacks)
 {
