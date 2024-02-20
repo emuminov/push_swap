@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/20 10:05:21 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/20 12:10:17 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -738,33 +738,75 @@ void	handle_error()
 	exit(EXIT_FAILURE);
 }
 
-char	**parse(int *should_free, int argc, char **argv)
+void	check_errors(char **values)
 {
-	char 	**result;
+	int	i;
+	int	j;
 
-	if (argc == 2 && !is_numeric(argv[1]))
-	{
-		result = ft_split(argv[1], ' ');
-		*should_free = 1;
-	}
-	else
-		result = &argv[1];
-	if (result[0] == NULL)
+	if (values[0] == NULL)
 		handle_error();
-	int i = 0;
-	while (result[i])
+	i = 0;
+	while (values[i])
 	{
-		if (!is_numeric(result[i]) || (ft_atoi(result[i]) != ft_atol(result[i])))
+		if (!is_numeric(values[i]) || (ft_atoi(values[i]) != ft_atol(values[i])))
 			handle_error();
-		int j = i + 1;
-		while (result[j])
+		j = i + 1;
+		while (values[j])
 		{
-			if (atoi(result[i]) == atoi(result[j]))
+			if (atoi(values[i]) == atoi(values[j]))
 				handle_error();
 			j++;
 		}
 		i++;
 	}
+}
+
+/* Duplicates NULL-terminate array of strings */
+char	**arr_duplicate(char **arr)
+{
+	int		i;
+	char	**result;
+
+	i = 0;
+	while (arr[i])
+		i++;
+	result = malloc(sizeof(char *) * (i + 1));
+	if (!result)
+		return (NULL);
+	i = 0;
+	while (arr[i])
+	{
+		result[i] = ft_strdup(arr[i]);
+		if (!result[i])
+		{
+			ft_free_split(result);
+			return (NULL);
+		}
+		i++;
+	}
+	result[i] = NULL;
+	return (result);
+}
+
+t_list	*parse(int argc, char **argv)
+{
+	char 	**values;
+	t_list	*result;
+	int		i;
+
+	if (argc == 2 && !is_numeric(argv[1]))
+		values = ft_split(argv[1], ' ');
+	else
+		values = arr_duplicate(&argv[1]);
+	if (values == NULL)
+		return (NULL);
+	check_errors(values);
+	i = 0;
+	while (values[i])
+		i++;
+	result = list_init(i, values);
+	ft_free_split(values);
+	// IF NOT RESULT HANDLE ERROR
 	return (result);
 	// re-check case with handling case with 1 number
 	// FREE SPLIT AS WELL
@@ -789,16 +831,12 @@ char	**parse(int *should_free, int argc, char **argv)
 //TODO: add parsing for the input
 int	main(int argc, char **argv)
 {
-	int			should_free;
-	char		**values;
 	t_stacks	stacks;
 
 	if (argc == 1)
 		return (0);
-	should_free = 0;
 	// parse should return stack_a list
-	values = parse(&should_free, argc, argv);
-	stacks.stack_a = list_init(argc - 1, values);
+	stacks.stack_a = parse(argc, argv);
 	if (!stacks.stack_a)
 		return (1);
 	stacks.stack_b = list_init(0, NULL);
@@ -808,6 +846,4 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	push_swap(&stacks);
-	if (should_free)
-		ft_free_split(values);
 }
