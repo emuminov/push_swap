@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/20 16:19:06 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/20 16:25:57 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,7 +318,7 @@ int	list_is_sorted(t_list *lst)
 	return (1);
 }
 
-int		list_find_position(t_node *node, t_list *lst)
+int	list_find_position(t_node *node, t_list *lst)
 {
 	int		i;
 	t_node	*curr;
@@ -391,7 +391,8 @@ void	check_errors(char **values)
 	i = 0;
 	while (values[i])
 	{
-		if (!is_numeric(values[i]) || (ft_atoi(values[i]) != ft_atol(values[i])))
+		if (!is_numeric(values[i])
+			|| (ft_atoi(values[i]) != ft_atol(values[i])))
 			handle_error(NULL, NULL, values, 0);
 		j = i + 1;
 		while (values[j])
@@ -433,7 +434,7 @@ char	**arr_duplicate(char **arr)
 
 t_list	*parse(int argc, char **argv)
 {
-	char 	**values;
+	char	**values;
 	t_list	*result;
 	int		i;
 
@@ -547,11 +548,11 @@ void	_sort_3(t_stacks *stacks)
 	if (stacks->stack_a->head == smallest && stacks->stack_a->tail != biggest)
 		return (rra(stacks), sa(stacks));
 	if (stacks->stack_a->head != smallest && stacks->stack_a->tail == biggest)
-		return sa(stacks);
+		return (sa(stacks));
 	if (stacks->stack_a->head != biggest && stacks->stack_a->tail == smallest)
-		return rra(stacks);
+		return (rra(stacks));
 	if (stacks->stack_a->head == biggest && stacks->stack_a->tail != smallest)
-		return ra(stacks);
+		return (ra(stacks));
 	if (stacks->stack_a->head == biggest && stacks->stack_a->tail == smallest)
 		return (sa(stacks), rra(stacks));
 }
@@ -625,16 +626,16 @@ t_node	*list_find_value_in_range(int lower, int upper, t_list *lst)
 // 40-59  | (100 / 5) * 2 | (100 / 5) * 3 - 1
 // 60-79  | (100 / 5) * 3 | (100 / 5) * 4 - 1
 // 80-99  | (100 / 5) * 4 | (100 / 5) * 5 - 1
-int	list_chunk_get_lower(int chunk_index, int num_of_chunks, int arr_length, int *arr)
+int	list_chunk_get_lower(int index, int n, int l, int *arr)
 {
-	return (arr[(arr_length / num_of_chunks) * (chunk_index - 1)]);
+	return (arr[(l / n) * (index - 1)]);
 }
 
-int	list_chunk_get_upper(int chunk_index, int num_of_chunks, int arr_length, int *arr)
+int	list_chunk_get_upper(int index, int n, int l, int *arr)
 {
-	if (chunk_index == num_of_chunks)
-		return (arr[arr_length - 1]);
-	return (arr[((arr_length / num_of_chunks) * chunk_index) - 1]);
+	if (index == n)
+		return (arr[l - 1]);
+	return (arr[((l / n) * index) - 1]);
 }
 
 t_node	*list_find_target(t_node *node, t_list *lst)
@@ -664,7 +665,7 @@ t_node	*list_find_target(t_node *node, t_list *lst)
 int	move_total(t_move *move)
 {
 	int	total_rx;
-	int total_rrx;
+	int	total_rrx;
 
 	if (move->ra > move->rb)
 		total_rx = move->ra;
@@ -678,7 +679,7 @@ int	move_total(t_move *move)
 	return (move->total);
 }
 
-int	list_rotate_chunk_value_to_top(int n, int i, int l, int *sorted, t_stacks *stacks)
+int	list_rotate_chunk_value(int n, int i, int l, int *sorted, t_stacks *stacks)
 {
 	t_node	*node;
 	int		upper;
@@ -691,7 +692,8 @@ int	list_rotate_chunk_value_to_top(int n, int i, int l, int *sorted, t_stacks *s
 		return (0);
 	stack_a_rotate_to_top(node, stacks);
 	pb(stacks);
-	if (stacks->stack_b->head->value < list_chunk_get_lower(n / 2 + i + 1, n, l, sorted))
+	if (stacks->stack_b->head->value
+		< list_chunk_get_lower(n / 2 + i + 1, n, l, sorted))
 		rb(stacks);
 	return (1);
 }
@@ -718,9 +720,13 @@ t_move	*move_copy(t_move *dest, t_move *src)
 
 void	move_calculate(t_node *node, t_stacks *stacks, t_move *move)
 {
-	t_node *target = list_find_target(node, stacks->stack_a);
-	int target_pos = list_find_position(target, stacks->stack_a);
-	int curr_pos = list_find_position(node, stacks->stack_b);
+	t_node	*target;
+	int		target_pos;
+	int		curr_pos;
+
+	target = list_find_target(node, stacks->stack_a);
+	target_pos = list_find_position(target, stacks->stack_a);
+	curr_pos = list_find_position(node, stacks->stack_b);
 	if (target_pos <= (stacks->stack_a->length / 2))
 		move->ra = target_pos;
 	else
@@ -736,10 +742,11 @@ t_move	move_find_best(t_stacks *stacks)
 {
 	t_move	best_move;
 	t_move	curr_move;
+	t_node	*curr;
 
 	move_init(&best_move);
-	t_node *curr = stacks->stack_b->head;
-	while(curr)
+	curr = stacks->stack_b->head;
+	while (curr)
 	{
 		move_init(&curr_move);
 		move_calculate(curr, stacks, &curr_move);
@@ -793,7 +800,7 @@ void	divide_in_chunks(int n, t_stacks *stacks)
 	l = stacks->stack_a->length;
 	while (i < (n / 2) && stacks->stack_a->length > 6)
 	{
-		if (!list_rotate_chunk_value_to_top(n, i, l, sorted, stacks))
+		if (!list_rotate_chunk_value(n, i, l, sorted, stacks))
 			i++;
 	}
 	free(sorted);
