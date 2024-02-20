@@ -6,12 +6,9 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/20 16:12:49 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/20 16:19:06 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// TODO: REMOVE!!!!!!!!!!!!!!!
-#include <stdio.h>
 
 #include <stdlib.h>
 #include "../libft/libft.h"
@@ -262,7 +259,6 @@ void	rrr(t_stacks *stacks)
 	ft_putstr_fd("rrr\n", STDOUT_FILENO);
 }
 
-// TODO: handle case where lst or lst->head are NULL
 t_node	*list_find_smallest(t_list *lst)
 {
 	t_node	*curr;
@@ -408,7 +404,7 @@ void	check_errors(char **values)
 	}
 }
 
-/* Duplicates NULL-terminate array of strings */
+/* Duplicates NULL-terminated array of strings */
 char	**arr_duplicate(char **arr)
 {
 	int		i;
@@ -456,18 +452,6 @@ t_list	*parse(int argc, char **argv)
 	if (!result)
 		handle_error(NULL, NULL, NULL, 1);
 	return (result);
-	// re-check case with handling case with 1 number
-	// FREE SPLIT AS WELL
-	// check -0 and 0 cases as well (duplicates)
-		// [x] arr_is_numeric();
-		// [x] arr_has_no_duplicates();
-		// [x] arr_has_no_longs();
-		//
-		// convert list of strings to the list of numbers
-		// check if there is no empty strings
-		// check if there are non-numbers
-		// check if there is no duplicates
-		// check if every number is int and not long
 }
 
 void	bubble_sort(int nums_len, int *arr)
@@ -572,8 +556,6 @@ void	_sort_3(t_stacks *stacks)
 		return (sa(stacks), rra(stacks));
 }
 
-// note: sweet spot for usage in optimal sort is n == 6
-// TODO: handle error if smallest is NULL
 void	simple_sort(int n, t_stacks *stacks)
 {
 	t_node	*smallest;
@@ -696,11 +678,6 @@ int	move_total(t_move *move)
 	return (move->total);
 }
 
-// void	rotate_chunk_value_to_top(int n, t_stacks *stacks)
-// {
-//
-// }
-
 int	list_rotate_chunk_value_to_top(int n, int i, int l, int *sorted, t_stacks *stacks)
 {
 	t_node	*node;
@@ -718,7 +695,6 @@ int	list_rotate_chunk_value_to_top(int n, int i, int l, int *sorted, t_stacks *s
 		rb(stacks);
 	return (1);
 }
-
 
 t_move	*move_init(t_move *move)
 {
@@ -800,7 +776,6 @@ void	move_apply(t_move *move, t_stacks *stacks)
 		rrb(stacks);
 }
 
-// TODO: solve potential NULL error
 /* Divides stack_a into n chunks and pushes them to stack_b,
  * leaving only 6 values in stack_a.
  * n / 2 - i     = lower chunk index
@@ -828,11 +803,8 @@ void	optimal_sort(int num_of_chunks, t_stacks *stacks)
 {
 	t_move	best_move;
 
-	//TODO: handle null error from copy_as_sorted
 	divide_in_chunks(num_of_chunks, stacks);
 	simple_sort(stacks->stack_a->length, stacks);
-
-	// TODO: handle error
 	while (stacks->stack_b->length)
 	{
 		best_move = move_find_best(stacks);
@@ -858,13 +830,6 @@ void	push_swap(t_stacks *stacks)
 		return (optimal_sort(4, stacks));
 }
 
-// If no parameters are specified, the program must not display anything and give the
-// prompt back.
-
-//TODO: refactor swapping functions into their own files
-//TODO: add error checking
-//TODO: add handling of both multiple arguments and a single string
-//TODO: add parsing for the input
 int	main(int argc, char **argv)
 {
 	t_stacks	stacks;
