@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 11:38:07 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:21:42 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/21 13:23:41 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,10 +78,6 @@ void	rrr(t_stacks *stacks);
 void	stack_a_rotate_to_top(t_node *node, t_stacks *stacks);
 void	stack_b_rotate_to_top(t_node *node, t_stacks *stacks);
 void	divide_in_chunks(int n, t_stacks *stacks);
-void	sort_2(t_stacks *stacks);
-void	sort_3(t_stacks *stacks);
-void	simple_sort(int n, t_stacks *stacks);
-void	optimal_sort(int num_of_chunks, t_stacks *stacks);
 void	push_swap(t_stacks *stacks);
 
 #endif

@@ -6,19 +6,19 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 13:20:32 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:22:10 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/21 13:23:57 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/push_swap.h"
 
-void	sort_2(t_stacks *stacks)
+static void	sort_2(t_stacks *stacks)
 {
 	if (stacks->stack_a->head->value > stacks->stack_a->tail->value)
 		sa(stacks);
 }
 
-void	sort_3(t_stacks *stacks)
+static void	sort_3(t_stacks *stacks)
 {
 	t_node	*smallest;
 	t_node	*biggest;
@@ -37,7 +37,7 @@ void	sort_3(t_stacks *stacks)
 		return (sa(stacks), rra(stacks));
 }
 
-void	simple_sort(int n, t_stacks *stacks)
+static void	simple_sort(int n, t_stacks *stacks)
 {
 	t_node	*smallest;
 
@@ -55,7 +55,7 @@ void	simple_sort(int n, t_stacks *stacks)
 	}
 }
 
-void	optimal_sort(int num_of_chunks, t_stacks *stacks)
+static void	optimal_sort(int num_of_chunks, t_stacks *stacks)
 {
 	t_move	best_move;
 
