@@ -5,7 +5,20 @@ CFLAGS=-Wall -Wextra -Werror -g
 #subject declarations------------------------------
 NAME=push_swap
 
-FILES=main.c push_swap.c
+FILES=arr.c \
+list1.c \
+list2.c \
+list3.c \
+main.c \
+move.c \
+parse.c \
+push_swap.c \
+px.c \
+rrx.c \
+rx.c \
+sort_utils.c \
+sx.c
+
 HEAD_FILE=push_swap.h
 
 HEAD_DIR=include
@@ -27,6 +40,7 @@ $(NAME): $(LIB) $(HEAD) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIB) -o $@
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c $(SRCS) $(HEAD)
+	@mkdir -p $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIB): $(LIB_PATH)
@@ -40,6 +54,7 @@ all: $(NAME)
 clean:
 	$(MAKE) -C $(LIB_DIR) $@
 	rm $(OBJS) -f
+	rm $(OBJS_DIR) -rf
 
 fclean: clean
 	$(MAKE) -C $(LIB_DIR) $@
@@ -49,9 +64,4 @@ re: fclean
 	$(MAKE) -C $(LIB_DIR) $@
 	$(MAKE) all --no-print-directory
 
-test: $(NAME)
-	$(CC) tests/ft_printf.c $(NAME) -o test.out
-	./test.out
-	valgrind ./test.out --check-leaks=full -s
-	
 .PHONY: all clean fclean re test
