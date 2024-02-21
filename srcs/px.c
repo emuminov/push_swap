@@ -1,29 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   px.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:21:48 by emuminov         ###   ########.fr       */
+/*   Created: 2024/02/21 13:10:02 by emuminov          #+#    #+#             */
+/*   Updated: 2024/02/21 13:13:22 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
+/* pa, pb operations. */
 #include "../include/push_swap.h"
 
-int	main(int argc, char **argv)
+void	_px(t_list *src_stack, t_list *dest_stack)
 {
-	t_stacks	stacks;
+	t_node	*pushed_node;
 
-	if (argc == 1)
-		return (EXIT_SUCCESS);
-	stacks.stack_a = parse(argc, argv);
-	stacks.stack_b = list_create(0, NULL);
-	if (!stacks.stack_b)
-		handle_error(stacks.stack_a, NULL, NULL, 1);
-	push_swap(&stacks);
-	list_free(stacks.stack_a);
-	list_free(stacks.stack_b);
+	if (!src_stack->head)
+		return ;
+	pushed_node = list_unlink_head(src_stack);
+	list_prepend_node(pushed_node, dest_stack);
+}
+
+void	pa(t_stacks *stacks)
+{
+	_px(stacks->stack_b, stacks->stack_a);
+	ft_putstr_fd("pa\n", STDOUT_FILENO);
+}
+
+void	pb(t_stacks *stacks)
+{
+	_px(stacks->stack_a, stacks->stack_b);
+	ft_putstr_fd("pb\n", STDOUT_FILENO);
 }
