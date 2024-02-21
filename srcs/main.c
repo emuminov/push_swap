@@ -6,11 +6,10 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 19:15:33 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:21:48 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/21 14:06:00 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include "../include/push_swap.h"
 
 int	main(int argc, char **argv)
