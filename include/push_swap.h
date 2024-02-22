@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 11:38:07 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:48:58 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/22 08:22:35 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int		*list_copy_as_sorted_arr(t_list *lst);
 int		list_find_position(t_node *node, t_list *lst);
 int		list_is_sorted(t_list *lst);
 t_list	*list_append_value(int value, t_list *lst);
-t_list	*list_create(int nums_len, char **values);
+t_list	*list_create(int l, char **values);
 t_list	*parse(int argc, char **argv);
 t_move	move_find_best(t_stacks *stacks);
 t_node	*list_find_biggest(t_list *lst);
@@ -65,18 +65,18 @@ void	handle_error(t_list *stack_a, t_list *stack_b, char **arr, int silent);
 void	list_free(t_list *lst);
 void	list_prepend_node(t_node *node, t_list *lst);
 void	move_apply(t_move *move, t_stacks *stacks);
-void	pa(t_stacks *stacks);
-void	pb(t_stacks *stacks);
+void	pa(int silent, t_stacks *stacks);
+void	pb(int silent, t_stacks *stacks);
 void	push_swap(t_stacks *stacks);
-void	ra(t_stacks *stacks);
-void	rb(t_stacks *stacks);
-void	rra(t_stacks *stacks);
-void	rrb(t_stacks *stacks);
-void	rrr(t_stacks *stacks);
-void	rr(t_stacks *stacks);
-void	sa(t_stacks *stacks);
-void	sb(t_stacks *stacks);
-void	ss(t_stacks *stacks);
+void	ra(int silent, t_stacks *stacks);
+void	rb(int silent, t_stacks *stacks);
+void	rra(int silent, t_stacks *stacks);
+void	rrb(int silent, t_stacks *stacks);
+void	rrr(int silent, t_stacks *stacks);
+void	rr(int silent, t_stacks *stacks);
+void	sa(int silent, t_stacks *stacks);
+void	sb(int silent, t_stacks *stacks);
+void	ss(int silent, t_stacks *stacks);
 void	stack_a_rotate_to_top(t_node *node, t_stacks *stacks);
 void	stack_b_rotate_to_top(t_node *node, t_stacks *stacks);
 
