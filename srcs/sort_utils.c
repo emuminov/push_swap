@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 13:15:26 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/22 11:21:55 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/22 12:56:27 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,8 @@ void	stack_b_rotate_to_top(t_node *node, t_stacks *stacks)
 		rrb(0, stacks);
 }
 
-/* Divides stack_a into n chunks and pushes them to stack_b,
-leaving only 6 values at least in stack_a. */
+/* Divides stack_a into n chunks (n should be even)
+and pushes them to stack_b, leaving only 6 values at least in stack_a. */
 void	divide_in_chunks(int n, t_stacks *stacks)
 {
 	int		*sorted;
