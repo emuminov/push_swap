@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 14:25:58 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/22 12:49:33 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/22 13:15:01 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,13 +76,17 @@ int	main(int argc, char **argv)
 {
 	t_stacks	stacks;
 
+	if (argc == 1)
+		return (EXIT_SUCCESS);
 	stacks.stack_a = parse(argc, argv);
 	stacks.stack_b = list_create(0, NULL);
 	if (!stacks.stack_b)
 		handle_error(stacks.stack_a, NULL, NULL, 1);
 	receive_operations(&stacks);
 	if (list_is_sorted(stacks.stack_a))
-		ft_putstr_fd("OK\n", 1);
+		ft_putstr_fd("OK\n", STDOUT_FILENO);
 	else
-		ft_putstr_fd("KO\n", 1);
+		ft_putstr_fd("KO\n", STDOUT_FILENO);
+	list_free(stacks.stack_a);
+	list_free(stacks.stack_b);
 }
