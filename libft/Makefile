@@ -19,6 +19,7 @@ ft_memcmp.c \
 ft_memcpy.c \
 ft_memmove.c \
 ft_memset.c \
+ft_free_split.c \
 ft_putchar_fd.c \
 ft_putendl_fd.c \
 ft_putnbr_fd.c \
@@ -39,9 +40,13 @@ ft_strrchr.c \
 ft_strtrim.c \
 ft_substr.c \
 ft_tolower.c \
-ft_toupper.c
+ft_toupper.c \
+get_next_line/get_next_line.c \
+get_next_line/get_next_line_utils.c
 
 OBJ=$(SRCS:%.c=%.o)
+
+OBJ_BONUS=$(BONUS:%.c=%.o)
 
 HEADER=libft.h
 
@@ -58,12 +63,15 @@ $(NAME): $(OBJ)
 all: $(NAME)
 
 clean:
-	rm $(OBJ) -f
+	rm $(OBJ) $(OBJ_BONUS) -f
 
 fclean: clean
 	rm $(NAME) -f
 
 re: fclean
 	$(MAKE) all
+
+bonus: $(OBJ) $(OBJ_BONUS)
+	@make "SRCS=$(SRCS) $(BONUS)" --no-print-directory
 
 .PHONY: all clean re fclean bonus
