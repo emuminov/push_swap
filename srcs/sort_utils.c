@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 13:15:26 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:18:33 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/22 08:09:14 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@ void	stack_a_rotate_to_top(t_node *node, t_stacks *stacks)
 	if ((stacks->stack_a->length / 2) >= pos)
 	{
 		while (pos--)
-			ra(stacks);
+			ra(0, stacks);
 		return ;
 	}
 	pos = stacks->stack_a->length - pos;
 	while (pos--)
-		rra(stacks);
+		rra(0, stacks);
 }
 
 /* Rotates inputted node to the top of stack b. */
@@ -37,12 +37,12 @@ void	stack_b_rotate_to_top(t_node *node, t_stacks *stacks)
 	pos = list_find_position(node, stacks->stack_b);
 	{
 		while (pos--)
-			rb(stacks);
+			rb(0, stacks);
 		return ;
 	}
 	pos = stacks->stack_b->length - pos;
 	while (pos--)
-		rrb(stacks);
+		rrb(0, stacks);
 }
 
 /* Divides stack_a into n chunks and pushes them to stack_b,
@@ -69,9 +69,9 @@ void	divide_in_chunks(int n, t_stacks *stacks)
 			continue ;
 		}
 		stack_a_rotate_to_top(node, stacks);
-		pb(stacks);
+		pb(0, stacks);
 		if (stacks->stack_b->head->value < arr_cl(n / 2 + i + 1, n, l, sorted))
-			rb(stacks);
+			rb(0, stacks);
 	}
 	free(sorted);
 }

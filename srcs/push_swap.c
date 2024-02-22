@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 13:20:32 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:23:57 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/22 08:10:42 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	sort_2(t_stacks *stacks)
 {
 	if (stacks->stack_a->head->value > stacks->stack_a->tail->value)
-		sa(stacks);
+		sa(0, stacks);
 }
 
 static void	sort_3(t_stacks *stacks)
@@ -26,15 +26,15 @@ static void	sort_3(t_stacks *stacks)
 	smallest = list_find_smallest(stacks->stack_a);
 	biggest = list_find_biggest(stacks->stack_a);
 	if (stacks->stack_a->head == smallest && stacks->stack_a->tail != biggest)
-		return (rra(stacks), sa(stacks));
+		return (rra(0, stacks), sa(0, stacks));
 	if (stacks->stack_a->head != smallest && stacks->stack_a->tail == biggest)
-		return (sa(stacks));
+		return (sa(0, stacks));
 	if (stacks->stack_a->head != biggest && stacks->stack_a->tail == smallest)
-		return (rra(stacks));
+		return (rra(0, stacks));
 	if (stacks->stack_a->head == biggest && stacks->stack_a->tail != smallest)
-		return (ra(stacks));
+		return (ra(0, stacks));
 	if (stacks->stack_a->head == biggest && stacks->stack_a->tail == smallest)
-		return (sa(stacks), rra(stacks));
+		return (sa(0, stacks), rra(0, stacks));
 }
 
 static void	simple_sort(int n, t_stacks *stacks)
@@ -45,12 +45,12 @@ static void	simple_sort(int n, t_stacks *stacks)
 	{
 		smallest = list_find_smallest(stacks->stack_a);
 		stack_a_rotate_to_top(smallest, stacks);
-		pb(stacks);
+		pb(0, stacks);
 	}
 	sort_3(stacks);
 	while (n - 3 > 0)
 	{
-		pa(stacks);
+		pa(0, stacks);
 		n--;
 	}
 }
@@ -65,7 +65,7 @@ static void	optimal_sort(int num_of_chunks, t_stacks *stacks)
 	{
 		best_move = move_find_best(stacks);
 		move_apply(&best_move, stacks);
-		pa(stacks);
+		pa(0, stacks);
 	}
 	stack_a_rotate_to_top(list_find_smallest(stacks->stack_a), stacks);
 }

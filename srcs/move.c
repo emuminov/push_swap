@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 12:56:06 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:00:10 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/22 08:11:03 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,20 +95,20 @@ void	move_apply(t_move *move, t_stacks *stacks)
 	{
 		move->ra--;
 		move->rb--;
-		rr(stacks);
+		rr(0, stacks);
 	}
 	while (move->rra && move->rrb)
 	{
 		move->rra--;
 		move->rrb--;
-		rrr(stacks);
+		rrr(0, stacks);
 	}
 	while (move->ra--)
-		ra(stacks);
+		ra(0, stacks);
 	while (move->rb--)
-		rb(stacks);
+		rb(0, stacks);
 	while (move->rra--)
-		rra(stacks);
+		rra(0, stacks);
 	while (move->rrb--)
-		rrb(stacks);
+		rrb(0, stacks);
 }

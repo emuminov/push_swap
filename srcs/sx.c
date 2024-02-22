@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 13:07:09 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:08:05 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/22 08:08:02 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,21 +30,24 @@ void	_sx(t_list *stack)
 	stack->tail->next = stack->head;
 }
 
-void	sa(t_stacks *stacks)
+void	sa(int silent, t_stacks *stacks)
 {
 	_sx(stacks->stack_a);
-	ft_putstr_fd("sa\n", STDOUT_FILENO);
+	if (!silent)
+		ft_putstr_fd("sa\n", STDOUT_FILENO);
 }
 
-void	sb(t_stacks *stacks)
+void	sb(int silent, t_stacks *stacks)
 {
 	_sx(stacks->stack_b);
-	ft_putstr_fd("sb\n", STDOUT_FILENO);
+	if (!silent)
+		ft_putstr_fd("sb\n", STDOUT_FILENO);
 }
 
-void	ss(t_stacks *stacks)
+void	ss(int silent, t_stacks *stacks)
 {
 	_sx(stacks->stack_a);
 	_sx(stacks->stack_b);
-	ft_putstr_fd("ss\n", STDOUT_FILENO);
+	if (!silent)
+		ft_putstr_fd("ss\n", STDOUT_FILENO);
 }

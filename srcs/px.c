@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 13:10:02 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 13:13:22 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/22 08:05:23 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,16 @@ void	_px(t_list *src_stack, t_list *dest_stack)
 	list_prepend_node(pushed_node, dest_stack);
 }
 
-void	pa(t_stacks *stacks)
+void	pa(int silent, t_stacks *stacks)
 {
 	_px(stacks->stack_b, stacks->stack_a);
-	ft_putstr_fd("pa\n", STDOUT_FILENO);
+	if (!silent)
+		ft_putstr_fd("pa\n", STDOUT_FILENO);
 }
 
-void	pb(t_stacks *stacks)
+void	pb(int silent, t_stacks *stacks)
 {
 	_px(stacks->stack_a, stacks->stack_b);
-	ft_putstr_fd("pb\n", STDOUT_FILENO);
+	if (!silent)
+		ft_putstr_fd("pb\n", STDOUT_FILENO);
 }
