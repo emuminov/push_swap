@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 14:25:58 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/22 13:15:01 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/22 16:39:52 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,20 +56,27 @@ void	do_operation(char *op, t_stacks *stacks)
 
 void	receive_operations(t_stacks *stacks)
 {
-	char		buf[5];
-	int			sz;
+	char	*op;
 
-	sz = 1;
-	buf[4] = '\0';
-	while (sz > 0)
+	op = get_next_line(STDIN_FILENO);
+	if (!op)
+		handle_error(stacks->stack_a, stacks->stack_b, NULL, 1);
+	while (op)
 	{
-		sz = read(0, buf, 4);
-		buf[sz] = '\0';
-		if (is_operation(buf))
-			do_operation(buf, stacks);
-		else if (sz > 0)
+		if (is_operation(op))
+			do_operation(op, stacks);
+		else
+		{
+			free(op);
+			get_next_line(-1);
 			handle_error(stacks->stack_a, stacks->stack_b, NULL, 0);
+		}
+		free(op);
+		op = get_next_line(STDIN_FILENO);
+		if (!op)
+			handle_error(stacks->stack_a, stacks->stack_b, NULL, 1);
 	}
+	free(op);
 }
 
 int	main(int argc, char **argv)
