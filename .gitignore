@@ -1,4 +1,4 @@
-*/*.o
+*.o
 *.out
 checker
 push_swap
