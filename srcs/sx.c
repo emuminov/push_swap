@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 13:07:09 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/22 08:08:02 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/27 13:21:32 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,15 @@ void	_sx(t_list *stack)
 {
 	t_node	*tmp;
 
-	if (!stack->head)
+	if (!stack->head || stack->length == 0 || stack->length == 1)
 		return ;
 	tmp = stack->head;
+	if (stack->length == 2)
+	{
+		stack->head = stack->tail;
+		stack->tail = tmp;
+		return ;
+	}
 	stack->head = tmp->next;
 	tmp->prev = stack->head;
 	tmp->next = stack->head->next;
