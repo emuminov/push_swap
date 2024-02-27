@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 13:11:39 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/22 08:07:53 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/27 13:23:52 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 void	_rx(t_list *stack)
 {
-	if (!stack->head || !stack->tail)
+	if (!stack->head || !stack->tail || stack->length == 0)
 		return ;
 	stack->tail = stack->head;
 	stack->head = stack->head->next;

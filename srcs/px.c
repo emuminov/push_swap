@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 13:10:02 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/22 08:05:23 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/02/27 13:25:13 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	_px(t_list *src_stack, t_list *dest_stack)
 {
 	t_node	*pushed_node;
 
-	if (!src_stack->head)
+	if (!src_stack->head || src_stack->length == 0)
 		return ;
 	pushed_node = list_unlink_head(src_stack);
 	list_prepend_node(pushed_node, dest_stack);
