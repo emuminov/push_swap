@@ -40,7 +40,6 @@ LIB_PATH=$(LIB_DIR)/$(LIB)
 
 #rules---------------------------------------------
 $(NAME): $(LIB) $(HEAD) $(OBJS)
-	echo $(BONUS_OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIB) -o $@
 
 $(BONUS_NAME): $(LIB) $(HEAD) $(BONUS_OBJS)
