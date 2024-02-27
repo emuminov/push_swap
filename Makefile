@@ -44,11 +44,11 @@ $(NAME): $(LIB) $(HEADER) $(OBJS)
 $(BONUS_NAME): $(LIB) $(HEADER) $(BONUS_OBJS)
 	$(CC) $(CFLAGS) $(BONUS_OBJS) $(LIB) -o $(BONUS_NAME)
 
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c $(SRCS) $(HEADER)
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c $(HEADER)
 	@mkdir -p $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJS_DIR)/main_bonus.o: $(SRCS_DIR)/main_bonus.c $(BONUS_SRCS) $(HEADER)
+$(OBJS_DIR)/main_bonus.o: $(SRCS_DIR)/main_bonus.c $(HEADER)
 	@mkdir -p $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
