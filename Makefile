@@ -23,40 +23,36 @@ sx.c
 HEAD_FILE=push_swap.h
 
 HEAD_DIR=include
-HEAD=$(HEAD_FILE:%.h=$(HEAD_DIR)/%.h)
+HEADER=$(HEAD_FILE:%.h=$(HEAD_DIR)/%.h)
 
 SRCS_DIR=srcs
 SRCS=$(FILES:%.c=$(SRCS_DIR)/%.c)
-BONUS_SRCS=$(subst main.c,bonus_main.c,$(SRCS))
+BONUS_SRCS=$(subst main.c,main_bonus.c,$(SRCS))
 
 OBJS_DIR=objs
 OBJS=$(FILES:%.c=$(OBJS_DIR)/%.o)
-BONUS_OBJS=$(subst main.o,bonus_main.o,$(OBJS))
+BONUS_OBJS=$(subst main.o,main_bonus.o,$(OBJS))
 
 #libft declarations--------------------------------
-LIB=libft.a
 LIB_DIR=libft
-LIB_PATH=$(LIB_DIR)/$(LIB)
+LIB=$(LIB_DIR)/libft.a
 
 #rules---------------------------------------------
-$(NAME): $(LIB) $(HEAD) $(OBJS)
+$(NAME): $(LIB) $(HEADER) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIB) -o $@
 
-$(BONUS_NAME): $(LIB) $(HEAD) $(BONUS_OBJS)
+$(BONUS_NAME): $(LIB) $(HEADER) $(BONUS_OBJS)
 	$(CC) $(CFLAGS) $(BONUS_OBJS) $(LIB) -o $(BONUS_NAME)
 
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c $(SRCS) $(HEAD)
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c $(SRCS) $(HEADER)
 	@mkdir -p $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJS_DIR)/bonus_main.o: $(SRCS_DIR)/bonus_main.c $(BONUS_SRCS) $(HEAD)
+$(OBJS_DIR)/main_bonus.o: $(SRCS_DIR)/main_bonus.c $(BONUS_SRCS) $(HEADER)
 	@mkdir -p $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(LIB): $(LIB_PATH)
-	cp $(LIB_PATH) .
-
-$(LIB_PATH):
+$(LIB)::
 	$(MAKE) -C $(LIB_DIR)
 
 all: $(NAME) $(BONUS_NAME)
