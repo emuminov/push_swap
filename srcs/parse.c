@@ -6,7 +6,7 @@
 /*   By: emuminov <emuminov@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 12:43:32 by emuminov          #+#    #+#             */
-/*   Updated: 2024/02/21 12:53:05 by emuminov         ###   ########.fr       */
+/*   Updated: 2024/03/06 13:37:38 by emuminov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static void	check_errors(char **values)
 		j = i + 1;
 		while (values[j])
 		{
-			if (atoi(values[i]) == atoi(values[j]))
+			if (ft_atoi(values[i]) == ft_atoi(values[j]))
 				handle_error(NULL, NULL, values, 0);
 			j++;
 		}
